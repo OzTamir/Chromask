@@ -144,4 +144,10 @@ export const VISUAL = {
   PLATFORM_ACTIVE_ALPHA: 1.0,
   /** Duration of alpha transition in ms */
   ALPHA_TRANSITION_MS: 150,
+  /** Shadow opacity (0-1) - very soft Thomas Was Alone style */
+  SHADOW_ALPHA: 0.08,
+  /** Shadow light source angle in degrees (45 = light from top-right, shadow down-left) */
+  SHADOW_LIGHT_ANGLE: 45,
+  /** Shadow spread at the end (perspective width) */
+  SHADOW_SPREAD: 15,
 } as const;

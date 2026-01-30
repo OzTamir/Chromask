@@ -179,7 +179,8 @@ export class GameScene extends Phaser.Scene {
     this.platforms.getChildren().forEach((child) => {
       const platform = child as Platform;
       const isSolid = this.colorSystem.isColorActive(platform.platformColor);
-      platform.setSolid(isSolid);
+      platform.setSolid(isSolid, this.cameras.main);
+      platform.updateShadow(this.cameras.main);
     });
   }
 

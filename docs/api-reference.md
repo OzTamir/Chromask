@@ -54,57 +54,10 @@ const PLAYER = {
   MOVE_SPEED: 300,        // Horizontal speed (pixels/second)
   JUMP_VELOCITY: -500,    // Jump velocity (negative = upward)
   GRAVITY: 800,           // Gravity acceleration (pixels/second²)
-  WIDTH: 32,              // Hitbox width
-  HEIGHT: 32,             // Hitbox height
+  WIDTH: 24,              // Hitbox width (Thomas Was Alone style rectangle)
+  HEIGHT: 48,             // Hitbox height
 };
 ```
-
-### PLATFORM Constants
-
-```typescript
-const PLATFORM = {
-  WIDTH: 100,             // Default platform width
-  HEIGHT: 20,             // Platform height
-  MIN_GAP_X: 60,          // Minimum horizontal spacing
-  MAX_GAP_X: 200,         // Maximum horizontal spacing
-  MIN_GAP_Y: 60,          // Minimum vertical spacing
-  MAX_GAP_Y: 120,         // Maximum vertical spacing
-};
-```
-
-### DIFFICULTY Constants
-
-```typescript
-const DIFFICULTY = {
-  FLOOR_START_HEIGHT: 750,        // Height when forced scroll begins (~10 platforms)
-  PHASE_2_HEIGHT: 1000,           // Secondary colors (Y/M/C) appear
-  PHASE_3_HEIGHT: 3000,           // White platforms appear
-  MAX_DIFFICULTY_HEIGHT: 8000,    // Full difficulty reached
-  
-  INITIAL_SCROLL_SPEED: 30,       // Starting scroll speed (px/s)
-  MAX_SCROLL_SPEED: 100,          // Maximum scroll speed (px/s)
-  
-  EASY_PHASE_HEIGHT: 375,         // Tutorial phase duration (~5 platforms)
-  EASY_PHASE_SAME_COLOR_CHANCE: 0.7,  // Probability of repeating color
-  EASY_PHASE_MAX_GAP_Y: 70,       // Smaller vertical gaps in tutorial
-  
-  HEIGHT_PER_PLATFORM: 75,        // Average pixels per platform (for display)
-};
-```
-
-### VISUAL Constants
-
-```typescript
-const VISUAL = {
-  PLATFORM_INACTIVE_ALPHA: 0.4,   // Alpha for non-solid platforms
-  PLATFORM_ACTIVE_ALPHA: 1.0,     // Alpha for solid platforms
-  ALPHA_TRANSITION_MS: 100,       // Transition duration
-};
-```
-
----
-
-## Classes
 
 ### ColorSystem
 
@@ -141,6 +94,49 @@ if (colorSystem.isColorActive(platform.platformColor)) {
 **`reset(): void`**
 
 Disable all colors (returns to NONE).
+
+---
+
+### VISUAL Constants
+
+```typescript
+const VISUAL = {
+  PLATFORM_INACTIVE_ALPHA: 0.3,   // Alpha for non-solid platforms
+  PLATFORM_ACTIVE_ALPHA: 1.0,     // Alpha for solid platforms
+  ALPHA_TRANSITION_MS: 150,       // Transition duration
+  SHADOW_ALPHA: 0.08,             // Very soft shadow (Thomas Was Alone style)
+  SHADOW_LIGHT_ANGLE: 45,         // Light source angle (45 = top-right, shadow down-left)
+  SHADOW_SPREAD: 15,              // Shadow spread at the end (perspective width)
+};
+```
+
+---
+
+### Shadow
+
+Thomas Was Alone style shadow - soft, elongated shadows extending from entities to bottom of screen.
+
+#### Methods
+
+**`update(x: number, y: number, width: number, height: number, isGrounded: boolean, cameraScrollY: number): void`**
+
+Update shadow position and visibility. Shadow extends from entity to bottom of screen. Shadow only renders when `isGrounded` is true.
+
+```typescript
+shadow.update(this.x, this.y, width, height, isGrounded, camera.scrollY);
+```
+
+**`setDepth(depth: number): void`**
+
+Set render depth for the shadow.
+
+**`clear(): void`**
+
+Clear the shadow graphics without destroying them.
+
+**`destroy(): void`**
+
+Clean up graphics resources.
 
 ---
 
@@ -188,13 +184,21 @@ If true, platform ignores color matching (e.g., starting floor).
 
 #### Methods
 
-**`setSolid(isSolid: boolean): void`**
+**`setSolid(isSolid: boolean, camera?: Phaser.Cameras.Scene2D.Camera): void`**
 
-Enable or disable collision. Updates visual alpha and border visibility. No effect if `alwaysSolid` is true or platform has been contacted.
+Enable or disable collision. Updates visual alpha and border visibility. Shadow is only rendered if platform is visible on screen (within camera bounds with 50px margin). No effect if `alwaysSolid` is true or platform has been contacted.
 
 ```typescript
-platform.setSolid(colorSystem.isColorActive(platform.platformColor));
+platform.setSolid(colorSystem.isColorActive(platform.platformColor), this.cameras.main);
 ```
+
+**`isOnScreen(camera: Phaser.Cameras.Scene2D.Camera): boolean`**
+
+Check if platform is within camera bounds (with 50px margin).
+
+**`updateShadow(camera?: Phaser.Cameras.Scene2D.Camera): void`**
+
+Update shadow rendering. Shadow only renders if platform is on screen.
 
 **`markContacted(): void`**
 
