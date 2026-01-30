@@ -32,6 +32,7 @@ Chromask is an endless vertical climber with additive color-mixing mechanics. Bu
 | Hold Red | 1 |
 | Hold Green | 2 |
 | Hold Blue | 3 |
+| Show Help | / (hold) |
 
 Color combinations: 1+2=Yellow, 1+3=Magenta, 2+3=Cyan, 1+2+3=White
 

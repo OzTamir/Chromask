@@ -145,3 +145,26 @@ export const VISUAL = {
   /** Duration of alpha transition in ms */
   ALPHA_TRANSITION_MS: 150,
 } as const;
+
+// =============================================================================
+// HELP DIALOG
+// =============================================================================
+
+export const HELP_DIALOG = {
+  /** Background color (dark) */
+  BACKGROUND_COLOR: 0x000000,
+  /** Background transparency */
+  BACKGROUND_ALPHA: 0.5,
+  /** Padding inside the dialog */
+  PADDING: 24,
+  /** Border radius */
+  BORDER_RADIUS: 12,
+  /** Text color */
+  TEXT_COLOR: '#ffffff',
+  /** Title font size */
+  TITLE_FONT_SIZE: '24px',
+  /** Body font size */
+  BODY_FONT_SIZE: '16px',
+  /** Line spacing */
+  LINE_HEIGHT: 1.4,
+} as const;

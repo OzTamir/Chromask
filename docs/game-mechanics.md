@@ -44,6 +44,7 @@ This binary solid/pass-through behavior creates the core challenge: players must
 | Hold Red | 1 |
 | Hold Green | 2 |
 | Hold Blue | 3 |
+| Show Help | / (hold) |
 
 Color keys can be held in any combination. Movement and jumping work independently of color selection, allowing players to move and switch colors simultaneously.
 

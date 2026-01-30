@@ -6,6 +6,7 @@ import { ColorSystem } from '../systems/ColorSystem';
 import { PlatformSpawner } from '../systems/PlatformSpawner';
 import { DifficultyManager } from '../systems/DifficultyManager';
 import { ColorIndicator } from '../ui/ColorIndicator';
+import { HelpDialog } from '../ui/HelpDialog';
 
 export class GameScene extends Phaser.Scene {
   private player!: Player;
@@ -14,10 +15,12 @@ export class GameScene extends Phaser.Scene {
   private platformSpawner!: PlatformSpawner;
   private difficultyManager!: DifficultyManager;
   private colorIndicator!: ColorIndicator;
+  private helpDialog!: HelpDialog;
 
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd!: { up: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key };
   private colorKeys!: { red: Phaser.Input.Keyboard.Key; green: Phaser.Input.Keyboard.Key; blue: Phaser.Input.Keyboard.Key };
+  private helpKey!: Phaser.Input.Keyboard.Key;
 
   private highestY: number = 0;
   private forcedScrollY: number = 0;
@@ -69,7 +72,9 @@ export class GameScene extends Phaser.Scene {
       blue: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
     };
 
-    this.input.keyboard!.addCapture('W,A,S,D,SPACE,UP,DOWN,LEFT,RIGHT,ONE,TWO,THREE');
+    this.helpKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH);
+
+    this.input.keyboard!.addCapture('W,A,S,D,SPACE,UP,DOWN,LEFT,RIGHT,ONE,TWO,THREE,FORWARD_SLASH');
   }
 
   private setupSystems(): void {
@@ -98,6 +103,7 @@ export class GameScene extends Phaser.Scene {
 
   private setupUI(): void {
     this.colorIndicator = new ColorIndicator(this, 20, 20);
+    this.helpDialog = new HelpDialog(this);
 
     this.scoreText = this.add.text(this.gameWidth - 20, 20, '0', {
       fontFamily: 'Arial, sans-serif',
@@ -139,6 +145,7 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     this.handleInput();
     this.updateColorFromKeys();
+    this.updateHelpDialog();
     this.updatePlatformSolidity();
     this.updateCamera(delta);
     this.updateSpawning();
@@ -173,6 +180,14 @@ export class GameScene extends Phaser.Scene {
     
     this.colorSystem.setColors(red, green, blue);
     this.colorIndicator.update(this.colorSystem);
+  }
+
+  private updateHelpDialog(): void {
+    if (this.helpKey.isDown) {
+      this.helpDialog.show();
+    } else {
+      this.helpDialog.hide();
+    }
   }
 
   private updatePlatformSolidity(): void {

@@ -102,6 +102,21 @@ const VISUAL = {
 };
 ```
 
+### HELP_DIALOG Constants
+
+```typescript
+const HELP_DIALOG = {
+  BACKGROUND_COLOR: 0x000000,     // Dark background
+  BACKGROUND_ALPHA: 0.5,          // Semi-transparent overlay
+  PADDING: 24,                    // Inner padding
+  BORDER_RADIUS: 12,              // Rounded corners
+  TEXT_COLOR: '#ffffff',          // White text
+  TITLE_FONT_SIZE: '24px',        // Title size
+  BODY_FONT_SIZE: '16px',         // Body text size
+  LINE_HEIGHT: 1.4,               // Text line spacing
+};
+```
+
 ---
 
 ## Classes
@@ -282,6 +297,24 @@ Convert pixel height to platform count for display.
 const platformCount = difficultyManager.getPlatformHeight(heightClimbed);
 // Display: "Height: 10"
 ```
+
+---
+
+### HelpDialog
+
+Displays help overlay with controls and color combinations. Extends `Phaser.GameObjects.Container`.
+
+Shows while the `/` key is held, hidden when released.
+
+#### Methods
+
+**`show(): void`**
+
+Make the dialog visible.
+
+**`hide(): void`**
+
+Hide the dialog.
 
 ---
 
