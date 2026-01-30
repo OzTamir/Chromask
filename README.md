@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/logo-128.png" alt="Chromask Logo" width="128" height="128" />
+</p>
+
 # Chromask
 
 Endless vertical climber with additive color-mixing mechanics. Built with Phaser 3 + TypeScript.
@@ -9,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173
+Open http://localhost:8080
 
 ## Controls
 
