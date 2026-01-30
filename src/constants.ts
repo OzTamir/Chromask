@@ -23,16 +23,16 @@ export enum GameColor {
   WHITE   = 0b111,  // 7 (R + G + B)
 }
 
-/** Hex color values for rendering */
+/** Hex color values for rendering - Thomas was Alone inspired matte colors */
 export const COLOR_HEX: Record<GameColor, number> = {
-  [GameColor.NONE]:    0x333333, // Dark gray (for UI only)
-  [GameColor.RED]:     0xFF3333,
-  [GameColor.GREEN]:   0x33FF33,
-  [GameColor.BLUE]:    0x3333FF,
-  [GameColor.YELLOW]:  0xFFFF33,
-  [GameColor.MAGENTA]: 0xFF33FF,
-  [GameColor.CYAN]:    0x33FFFF,
-  [GameColor.WHITE]:   0xFFFFFF,
+  [GameColor.NONE]:    0x555555, // Gray (for UI only)
+  [GameColor.RED]:     0xCC3333, // Muted red
+  [GameColor.GREEN]:   0x33AA33, // Muted green
+  [GameColor.BLUE]:    0x3366CC, // Muted blue
+  [GameColor.YELLOW]:  0xCCCC33, // Muted yellow
+  [GameColor.MAGENTA]: 0xAA33AA, // Muted magenta
+  [GameColor.CYAN]:    0x33CCCC, // Muted cyan
+  [GameColor.WHITE]:   0xEEEEEE, // Off-white
 };
 
 // =============================================================================
@@ -46,9 +46,9 @@ export const PLAYER = {
   JUMP_VELOCITY: -500,
   /** Gravity applied to player (pixels/second^2) */
   GRAVITY: 800,
-  /** Player hitbox dimensions */
-  WIDTH: 32,
-  HEIGHT: 32,
+  /** Player hitbox dimensions - rectangular like Thomas was Alone characters */
+  WIDTH: 24,
+  HEIGHT: 48,
 } as const;
 
 // =============================================================================
@@ -58,7 +58,7 @@ export const PLAYER = {
 export const PLATFORM = {
   /** Default platform dimensions */
   WIDTH: 100,
-  HEIGHT: 20,
+  HEIGHT: 16,
   /** Horizontal spacing between platforms */
   MIN_GAP_X: 60,
   MAX_GAP_X: 200,
@@ -117,7 +117,7 @@ export const DIFFICULTY = {
 export const GAME = {
   WIDTH: 480,
   HEIGHT: 720,
-  BACKGROUND_COLOR: 0x1a1a2e,
+  BACKGROUND_COLOR: 0x2D2D2D, // Dark warm gray like Thomas was Alone background
 } as const;
 
 // =============================================================================
@@ -139,9 +139,9 @@ export const CAMERA = {
 
 export const VISUAL = {
   /** Alpha for non-solid (mismatched color) platforms */
-  PLATFORM_INACTIVE_ALPHA: 0.4,
+  PLATFORM_INACTIVE_ALPHA: 0.3,
   /** Alpha for solid (matched color) platforms */
   PLATFORM_ACTIVE_ALPHA: 1.0,
   /** Duration of alpha transition in ms */
-  ALPHA_TRANSITION_MS: 100,
+  ALPHA_TRANSITION_MS: 150,
 } as const;

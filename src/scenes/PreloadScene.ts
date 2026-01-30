@@ -26,22 +26,45 @@ export class PreloadScene extends Phaser.Scene {
     );
 
     for (const color of colors) {
-      graphics.clear();
-      graphics.fillStyle(COLOR_HEX[color], 1);
-      graphics.fillRoundedRect(0, 0, PLATFORM.WIDTH, PLATFORM.HEIGHT, 4);
-      graphics.generateTexture(`platform_${color}`, PLATFORM.WIDTH, PLATFORM.HEIGHT);
+      this.createFlatRectangle(graphics, PLATFORM.WIDTH, PLATFORM.HEIGHT, COLOR_HEX[color], `platform_${color}`);
     }
 
-    graphics.clear();
-    graphics.fillStyle(0x888888, 1);
-    graphics.fillRect(0, 0, PLATFORM.WIDTH, PLATFORM.HEIGHT);
-    graphics.generateTexture(`platform_${GameColor.NONE}`, PLATFORM.WIDTH, PLATFORM.HEIGHT);
+    this.createFlatRectangle(graphics, PLATFORM.WIDTH, PLATFORM.HEIGHT, 0x555555, `platform_${GameColor.NONE}`);
   }
 
   private createPlayerTexture(graphics: Phaser.GameObjects.Graphics): void {
+    this.createFlatRectangle(graphics, PLAYER.WIDTH, PLAYER.HEIGHT, 0xEEEEEE, 'player');
+  }
+
+  private createFlatRectangle(graphics: Phaser.GameObjects.Graphics, width: number, height: number, color: number, key: string): void {
     graphics.clear();
-    graphics.fillStyle(0xffffff, 1);
-    graphics.fillRect(0, 0, PLAYER.WIDTH, PLAYER.HEIGHT);
-    graphics.generateTexture('player', PLAYER.WIDTH, PLAYER.HEIGHT);
+
+    // Main body - flat matte color
+    graphics.fillStyle(color, 1);
+    graphics.fillRect(0, 0, width, height);
+
+    // Subtle top edge highlight (Thomas was Alone style)
+    graphics.fillStyle(this.lightenColor(color, 0.15), 1);
+    graphics.fillRect(0, 0, width, 2);
+
+    // Subtle bottom edge shadow
+    graphics.fillStyle(this.darkenColor(color, 0.15), 1);
+    graphics.fillRect(0, height - 2, width, 2);
+
+    graphics.generateTexture(key, width, height);
+  }
+
+  private lightenColor(color: number, factor: number): number {
+    const r = Math.min(255, ((color >> 16) & 0xFF) + Math.floor(255 * factor));
+    const g = Math.min(255, ((color >> 8) & 0xFF) + Math.floor(255 * factor));
+    const b = Math.min(255, (color & 0xFF) + Math.floor(255 * factor));
+    return (r << 16) | (g << 8) | b;
+  }
+
+  private darkenColor(color: number, factor: number): number {
+    const r = Math.max(0, ((color >> 16) & 0xFF) - Math.floor(255 * factor));
+    const g = Math.max(0, ((color >> 8) & 0xFF) - Math.floor(255 * factor));
+    const b = Math.max(0, (color & 0xFF) - Math.floor(255 * factor));
+    return (r << 16) | (g << 8) | b;
   }
 }

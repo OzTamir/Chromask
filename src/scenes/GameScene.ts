@@ -99,10 +99,11 @@ export class GameScene extends Phaser.Scene {
   private setupUI(): void {
     this.colorIndicator = new ColorIndicator(this, 20, 20);
 
-    this.scoreText = this.add.text(this.gameWidth - 20, 20, 'Height: 0', {
-      fontFamily: 'monospace',
-      fontSize: '20px',
-      color: '#ffffff',
+    this.scoreText = this.add.text(this.gameWidth - 20, 20, '0', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '24px',
+      color: '#EEEEEE',
+      fontStyle: 'bold',
     });
     this.scoreText.setOrigin(1, 0);
     this.scoreText.setScrollFactor(0);
@@ -122,9 +123,15 @@ export class GameScene extends Phaser.Scene {
       const player = playerObj as Player;
       const platform = platformObj as Platform;
       const playerBody = player.body as Phaser.Physics.Arcade.Body;
-      
+      const platformBody = platform.body as Phaser.Physics.Arcade.StaticBody;
+
       if (playerBody.blocked.down || playerBody.touching.down) {
-        platform.markContacted();
+        const playerBottom = playerBody.bottom;
+        const platformTop = platformBody.top;
+        
+        if (playerBottom <= platformTop + 5 && playerBody.velocity.y >= 0) {
+          platform.markContacted();
+        }
       }
     });
   }
