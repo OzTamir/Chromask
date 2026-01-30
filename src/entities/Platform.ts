@@ -1,33 +1,54 @@
 import Phaser from 'phaser';
 import { GameColor, COLOR_HEX, VISUAL, PLATFORM } from '../constants';
 
+export interface PlatformConfig {
+  width?: number;
+  alwaysSolid?: boolean;
+}
+
 export class Platform extends Phaser.Physics.Arcade.Sprite {
   public readonly platformColor: GameColor;
-  private dashedBorder: Phaser.GameObjects.Graphics;
+  public readonly alwaysSolid: boolean;
+  private readonly platformWidth: number;
+  private dashedBorder: Phaser.GameObjects.Graphics | null = null;
+  private contacted = false;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, color: GameColor) {
+  constructor(scene: Phaser.Scene, x: number, y: number, color: GameColor, config?: PlatformConfig) {
     super(scene, x, y, `platform_${color}`);
     
     this.platformColor = color;
+    this.alwaysSolid = config?.alwaysSolid ?? false;
+    this.platformWidth = config?.width ?? PLATFORM.WIDTH;
 
     scene.add.existing(this);
     scene.physics.add.existing(this, true);
 
-    this.setTint(COLOR_HEX[color]);
-    this.setAlpha(VISUAL.PLATFORM_INACTIVE_ALPHA);
-
-    this.dashedBorder = scene.add.graphics();
-    this.drawDashedBorder(COLOR_HEX[color]);
-    this.dashedBorder.setVisible(true);
+    if (this.alwaysSolid) {
+      this.clearTint();
+      this.setAlpha(VISUAL.PLATFORM_ACTIVE_ALPHA);
+      this.setDisplaySize(this.platformWidth, PLATFORM.HEIGHT);
+      const body = this.body as Phaser.Physics.Arcade.StaticBody;
+      body.setSize(this.platformWidth, PLATFORM.HEIGHT);
+      body.setOffset((PLATFORM.WIDTH - this.platformWidth) / 2, 0);
+      body.updateFromGameObject();
+    } else {
+      this.setTint(COLOR_HEX[color]);
+      this.setAlpha(VISUAL.PLATFORM_INACTIVE_ALPHA);
+      this.dashedBorder = scene.add.graphics();
+      this.drawDashedBorder(COLOR_HEX[color]);
+      this.dashedBorder.setVisible(true);
+    }
   }
 
   private drawDashedBorder(color: number): void {
-    const w = PLATFORM.WIDTH;
+    if (!this.dashedBorder) return;
+    const w = this.platformWidth;
     const h = PLATFORM.HEIGHT;
     const dashLen = 6;
     const gapLen = 4;
+    const border = this.dashedBorder;
     
-    this.dashedBorder.lineStyle(2, color, 0.8);
+    border.lineStyle(2, color, 0.8);
     
     const drawDashedLine = (x1: number, y1: number, x2: number, y2: number) => {
       const dx = x2 - x1;
@@ -44,10 +65,10 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
         const endPos = Math.min(pos + segLen, len);
         
         if (drawing) {
-          this.dashedBorder.beginPath();
-          this.dashedBorder.moveTo(x1 + nx * pos, y1 + ny * pos);
-          this.dashedBorder.lineTo(x1 + nx * endPos, y1 + ny * endPos);
-          this.dashedBorder.strokePath();
+          border.beginPath();
+          border.moveTo(x1 + nx * pos, y1 + ny * pos);
+          border.lineTo(x1 + nx * endPos, y1 + ny * endPos);
+          border.strokePath();
         }
         
         pos = endPos;
@@ -64,15 +85,28 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
     drawDashedLine(left, top + h, left, top);
   }
 
+  markContacted(): void {
+    if (this.contacted) return;
+    this.contacted = true;
+    this.setAlpha(VISUAL.PLATFORM_ACTIVE_ALPHA);
+    this.dashedBorder?.setVisible(false);
+  }
+
+  isContacted(): boolean {
+    return this.contacted;
+  }
+
   setSolid(isSolid: boolean): void {
+    if (this.alwaysSolid || this.contacted) return;
+    
     const body = this.body as Phaser.Physics.Arcade.StaticBody;
     body.enable = isSolid;
     this.setAlpha(isSolid ? VISUAL.PLATFORM_ACTIVE_ALPHA : VISUAL.PLATFORM_INACTIVE_ALPHA);
-    this.dashedBorder.setVisible(!isSolid);
+    this.dashedBorder?.setVisible(!isSolid);
   }
 
   destroy(fromScene?: boolean): void {
-    this.dashedBorder.destroy();
+    this.dashedBorder?.destroy();
     super.destroy(fromScene);
   }
 }
