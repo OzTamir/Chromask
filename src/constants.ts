@@ -68,11 +68,21 @@ export const CHARACTER = {
     hasEyes: true,
     hitbox: { width: 24, height: 48, offsetX: 0, offsetY: 0 },
   } as CharacterDefinition,
+  CAT: {
+    id: 'cat',
+    name: 'Cat',
+    texture: 'cat-sprite',
+    scale: 1.5,
+    hasAnimations: true,
+    hasEyes: false,
+    hitbox: { width: 24, height: 20, offsetX: 4, offsetY: 8 },
+  } as CharacterDefinition,
 };
 
 export const CHARACTER_DEFINITIONS: CharacterDefinition[] = [
   CHARACTER.RUNNER,
   CHARACTER.CLASSIC,
+  CHARACTER.CAT,
 ];
 
 // =============================================================================

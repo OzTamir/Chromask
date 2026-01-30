@@ -89,34 +89,30 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const velocityX = body.velocity.x;
     const velocityY = body.velocity.y;
     const onGround = body.blocked.down || body.touching.down;
+    const prefix = this.currentCharacter.id;
 
-    // Handle sprite flipping
     if (velocityX < 0) {
       this.setFlipX(true);
     } else if (velocityX > 0) {
       this.setFlipX(false);
     }
 
-    // Determine animation based on state
     let nextAnimation: string;
 
     if (!onGround) {
-      // In air
       if (velocityY < 0) {
-        nextAnimation = 'player-jump';
+        nextAnimation = `${prefix}-jump`;
       } else {
-        nextAnimation = 'player-fall';
+        nextAnimation = `${prefix}-fall`;
       }
     } else {
-      // On ground
       if (Math.abs(velocityX) > 0) {
-        nextAnimation = 'player-run';
+        nextAnimation = `${prefix}-run`;
       } else {
-        nextAnimation = 'player-idle';
+        nextAnimation = `${prefix}-idle`;
       }
     }
 
-    // Only switch animation if different
     if (this.anims.currentAnim?.key !== nextAnimation) {
       this.play(nextAnimation);
     }
@@ -132,7 +128,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (!character.hasAnimations) {
       this.anims.stop();
     } else {
-      this.play('player-idle');
+      this.play(`${character.id}-idle`);
     }
 
     if (character.hasEyes) {

@@ -12,6 +12,11 @@ export class PreloadScene extends Phaser.Scene {
       frameHeight: 32,
     });
 
+    this.load.spritesheet('cat-sprite', 'assets/Cat.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+
     // Load all audio assets
     Object.entries(AUDIO.FILES).forEach(([key, path]) => {
       this.load.audio(key, path);
@@ -34,30 +39,60 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private createAnimations(): void {
+    // Runner animations
     this.anims.create({
-      key: 'player-run',
+      key: 'runner-run',
       frames: this.anims.generateFrameNumbers('player-sprite', { start: 0, end: 13 }),
       frameRate: 12,
       repeat: -1,
     });
 
     this.anims.create({
-      key: 'player-idle',
+      key: 'runner-idle',
       frames: this.anims.generateFrameNumbers('player-sprite', { start: 14, end: 17 }),
       frameRate: 6,
       repeat: -1,
     });
 
     this.anims.create({
-      key: 'player-jump',
+      key: 'runner-jump',
       frames: this.anims.generateFrameNumbers('player-sprite', { start: 19, end: 19 }),
       frameRate: 1,
       repeat: 0,
     });
 
     this.anims.create({
-      key: 'player-fall',
+      key: 'runner-fall',
       frames: this.anims.generateFrameNumbers('player-sprite', { start: 18, end: 18 }),
+      frameRate: 1,
+      repeat: 0,
+    });
+
+    // Cat animations (3x3 grid: top 2 rows = run, bottom row = idle)
+    this.anims.create({
+      key: 'cat-run',
+      frames: this.anims.generateFrameNumbers('cat-sprite', { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'cat-idle',
+      frames: this.anims.generateFrameNumbers('cat-sprite', { start: 6, end: 8 }),
+      frameRate: 6,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'cat-jump',
+      frames: this.anims.generateFrameNumbers('cat-sprite', { start: 2, end: 2 }),
+      frameRate: 1,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: 'cat-fall',
+      frames: this.anims.generateFrameNumbers('cat-sprite', { start: 5, end: 5 }),
       frameRate: 1,
       repeat: 0,
     });
