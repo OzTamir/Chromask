@@ -20,9 +20,6 @@
 [] Land on Correct (Solid) Platform
   * Signals success and safety; tells the player the color choice was correct.
 
-[] Fall Through Wrong (Non-Solid) Platform
-  * Signals a mistake without punishment; should feel like “nothing caught you,” not an impact.
-
 [] Game Start
   * Marks the beginning of a run and sets momentum; short, rising, non-dramatic.
 
