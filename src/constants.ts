@@ -54,10 +54,10 @@ export const CHARACTER = {
     id: 'runner',
     name: 'Runner',
     texture: 'player-sprite',
-    scale: 2,
+    scale: 1.5,
     hasAnimations: true,
     hasEyes: false,
-    hitbox: { width: 24, height: 28, offsetX: 4, offsetY: 2 },
+    hitbox: { width: 24, height: 32, offsetX: 4, offsetY: 0 },
   } as CharacterDefinition,
   CLASSIC: {
     id: 'classic',

@@ -3,7 +3,6 @@ import { PLAYER, CharacterDefinition, CHARACTER } from '../constants';
 import { Shadow } from './Shadow';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  private readonly SPRITE_SCALE = 2;
   private currentCharacter: CharacterDefinition = CHARACTER.RUNNER;
   private leftEye: Phaser.GameObjects.Ellipse | null = null;
   private rightEye: Phaser.GameObjects.Ellipse | null = null;
@@ -21,10 +20,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     body.setCollideWorldBounds(true);
     body.setBounce(0);
     body.setFriction(1, 0);
-    this.setScale(this.SPRITE_SCALE);
-    // setSize/setOffset work in unscaled sprite coordinates
-    this.setSize(24, 28);
-    this.setOffset(4, 2);
+    this.setScale(CHARACTER.RUNNER.scale);
+    this.setSize(24, 32);
+    this.setOffset(4, 0);
 
     this.shadow = new Shadow(scene, -5);
   }
