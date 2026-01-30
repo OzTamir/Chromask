@@ -22,6 +22,7 @@ export class GameScene extends Phaser.Scene {
   private highestY: number = 0;
   private forcedScrollY: number = 0;
   private floorStarted: boolean = false;
+  private maxScrollSpeed: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -29,6 +30,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Reset all scene state for new game (scene object is reused by Phaser)
+    this.maxScrollSpeed = 0;
+
     this.setupPhysicsWorld();
     this.setupInput();
     this.setupSystems();
@@ -98,9 +102,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setupCollision(): void {
-    this.physics.add.collider(this.player, this.platforms, (_player, platformObj) => {
+    this.physics.add.collider(this.player, this.platforms, (playerObj, platformObj) => {
+      const player = playerObj as Player;
       const platform = platformObj as Platform;
-      platform.markContacted();
+      const playerBody = player.body as Phaser.Physics.Arcade.Body;
+      
+      if (playerBody.blocked.down || playerBody.touching.down) {
+        platform.markContacted();
+      }
     });
   }
 
@@ -157,7 +166,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     const heightClimbed = this.difficultyManager.getHeightClimbed(this.highestY);
-    const scrollSpeed = this.difficultyManager.getScrollSpeed(heightClimbed);
+    const baseScrollSpeed = this.difficultyManager.getScrollSpeed(heightClimbed);
+    
+    // Ensure speed never decreases once floor starts
+    this.maxScrollSpeed = Math.max(this.maxScrollSpeed, baseScrollSpeed);
+    const scrollSpeed = this.maxScrollSpeed;
     
     if (scrollSpeed > 0 && !this.floorStarted) {
       this.floorStarted = true;
@@ -173,6 +186,11 @@ export class GameScene extends Phaser.Scene {
     const finalScroll = Math.min(ratchetedScroll, this.forcedScrollY);
     
     this.cameras.main.scrollY = finalScroll;
+
+    // Keep floor caught up with camera when player jumps ahead
+    if (this.floorStarted && this.forcedScrollY > finalScroll) {
+      this.forcedScrollY = finalScroll;
+    }
   }
 
   private updateSpawning(): void {
