@@ -167,6 +167,109 @@ When contributing to Chromask, follow these guidelines:
 3. Verify the production build works: `npm run preview`
 4. Check that no console errors appear during gameplay
 
+## Adding New Characters
+
+The game supports multiple playable characters with different visual styles. Here's how to add a new character:
+
+### 1. Define the Character in constants.ts
+
+Add a new entry to the `CHARACTER` object:
+
+```typescript
+export const CHARACTER = {
+  RUNNER: { /* existing */ },
+  CLASSIC: { /* existing */ },
+  YOUR_CHARACTER: {
+    id: 'your-character',           // Unique identifier
+    name: 'Your Character',          // Display name in UI
+    texture: 'your-texture-key',     // Phaser texture key
+    scale: 1,                        // Display scale (1 = native size)
+    hasAnimations: false,            // true if using spritesheet animations
+    hasEyes: false,                  // true to add floating eye decorations
+    hitbox: {
+      width: 24,                     // Physics body width
+      height: 48,                    // Physics body height
+      offsetX: 0,                    // X offset from sprite origin
+      offsetY: 0,                    // Y offset from sprite origin
+    },
+  } as CharacterDefinition,
+};
+```
+
+Then add it to `CHARACTER_DEFINITIONS`:
+
+```typescript
+export const CHARACTER_DEFINITIONS: CharacterDefinition[] = [
+  CHARACTER.RUNNER,
+  CHARACTER.CLASSIC,
+  CHARACTER.YOUR_CHARACTER,  // Add here
+];
+```
+
+### 2. Create the Texture
+
+**Option A: Procedural texture (like Classic)**
+
+Add to `PreloadScene.createTextures()`:
+
+```typescript
+private createYourCharacterTexture(graphics: Phaser.GameObjects.Graphics): void {
+  graphics.clear();
+  graphics.fillStyle(0xYOURCOLOR, 1);
+  graphics.fillRect(0, 0, width, height);
+  graphics.generateTexture('your-texture-key', width, height);
+}
+```
+
+**Option B: External spritesheet (like Runner)**
+
+Add to `PreloadScene.preload()`:
+
+```typescript
+this.load.spritesheet('your-texture-key', 'assets/YourSprite.png', {
+  frameWidth: 32,
+  frameHeight: 32,
+});
+```
+
+### 3. Add Animations (if hasAnimations: true)
+
+Add to `PreloadScene.createAnimations()`:
+
+```typescript
+this.anims.create({
+  key: 'your-character-idle',
+  frames: this.anims.generateFrameNumbers('your-texture-key', { start: 0, end: 3 }),
+  frameRate: 6,
+  repeat: -1,
+});
+// Add run, jump, fall animations as needed
+```
+
+**Note**: Currently the Player class expects specific animation keys (`player-run`, `player-idle`, `player-jump`, `player-fall`). To support character-specific animations, you'll need to extend the animation system.
+
+### 4. Test the Character
+
+1. Run `npm run build` to verify TypeScript compiles
+2. Start `npm run dev`
+3. Press Tab on the ground platform to cycle to your new character
+4. Verify hitbox feels correct and visuals display properly
+
+### Character Definition Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier for the character |
+| `name` | string | Display name shown in the character selector UI |
+| `texture` | string | Phaser texture key (must match loaded texture) |
+| `scale` | number | Visual scale multiplier (1 = native size) |
+| `hasAnimations` | boolean | Whether to use animation state machine |
+| `hasEyes` | boolean | Whether to add floating eye decorations |
+| `hitbox.width` | number | Physics body width in pixels |
+| `hitbox.height` | number | Physics body height in pixels |
+| `hitbox.offsetX` | number | X offset of hitbox from sprite origin |
+| `hitbox.offsetY` | number | Y offset of hitbox from sprite origin |
+
 ## Troubleshooting
 
 ### Port 8080 Already in Use

@@ -44,9 +44,23 @@ This binary solid/pass-through behavior creates the core challenge: players must
 | Hold Red | 1 |
 | Hold Green | 2 |
 | Hold Blue | 3 |
+| Switch Character | Tab (on ground, before first jump) |
 | Show Help | / (hold) |
 
 Color keys can be held in any combination. Movement and jumping work independently of color selection, allowing players to move and switch colors simultaneously.
+
+## Character Selection
+
+Players can choose between two characters before starting their climb:
+
+| Character | Description |
+|-----------|-------------|
+| **Runner** | Animated sprite with running, idle, jump, and fall animations. Default character. |
+| **Classic** | White rectangle with floating eyes. Original "Thomas Was Alone" inspired design. |
+
+Character selection is available only while standing on the starting ground platform. Press **Tab** to cycle between characters. Once the player jumps for the first time, the selection is locked and the character selector UI disappears.
+
+Both characters have identical physics and gameplay - the choice is purely cosmetic.
 
 ## Difficulty Progression
 

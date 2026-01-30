@@ -24,6 +24,7 @@ Open http://localhost:8080
 | Hold Red | 1 |
 | Hold Green | 2 |
 | Hold Blue | 3 |
+| Switch Character | Tab (on ground, before first jump) |
 | Show Help | / (hold) |
 
 ## How to Play

@@ -117,6 +117,36 @@ const HELP_DIALOG = {
 };
 ```
 
+### CHARACTER Constants
+
+```typescript
+const CHARACTER = {
+  RUNNER: {
+    id: 'runner',
+    name: 'Runner',
+    texture: 'player-sprite',
+    scale: 2,
+    hasAnimations: true,
+    hasEyes: false,
+    hitbox: { width: 24, height: 28, offsetX: 4, offsetY: 2 },
+  },
+  CLASSIC: {
+    id: 'classic',
+    name: 'Classic',
+    texture: 'player',
+    scale: 1,
+    hasAnimations: false,
+    hasEyes: true,
+    hitbox: { width: 24, height: 48, offsetX: 0, offsetY: 0 },
+  },
+};
+
+const CHARACTER_DEFINITIONS: CharacterDefinition[] = [
+  CHARACTER.RUNNER,
+  CHARACTER.CLASSIC,
+];
+```
+
 ---
 
 ## Classes
@@ -163,7 +193,21 @@ Disable all colors (returns to NONE).
 
 Player entity with physics and movement controls. Extends `Phaser.Physics.Arcade.Sprite`.
 
+Supports multiple characters with different textures, scales, and visual features (eyes, animations).
+
 #### Methods
+
+**`setCharacter(character: CharacterDefinition): void`**
+
+Switch to a different character. Updates texture, scale, hitbox, and toggles eyes/animations.
+
+```typescript
+player.setCharacter(CHARACTER.CLASSIC);  // Switch to classic white rectangle with eyes
+```
+
+**`getCharacter(): CharacterDefinition`**
+
+Returns the current character definition.
 
 **`moveLeft(): void`**
 
@@ -318,7 +362,107 @@ Hide the dialog.
 
 ---
 
+### CharacterSelector
+
+UI component displaying the current character preview and name. Extends `Phaser.GameObjects.Container`.
+
+Positioned in the top-left corner below the ColorIndicator. Hidden after the player's first jump.
+
+#### Constructor
+
+```typescript
+new CharacterSelector(scene: Phaser.Scene, x: number, y: number)
+```
+
+#### Methods
+
+**`update(characterName: string, textureKey: string): void`**
+
+Update the displayed character preview and name.
+
+```typescript
+characterSelector.update('Classic', 'player');
+```
+
+**`hide(): void`**
+
+Hide the character selector (called after first jump).
+
+---
+
+### PreloadScene
+
+Phaser scene that loads and initializes game assets. Runs before GameScene.
+
+#### Methods
+
+**`preload(): void`**
+
+Load game assets. Creates the 'player-sprite' spritesheet from `assets/Running.png` (128×160 px, 32×32 frame size).
+
+```typescript
+this.textures.createCanvas('player-sprite', 128, 160);
+// Loads spritesheet with 4 columns × 5 rows of 32×32 frames
+```
+
+**`createAnimations(): void`**
+
+Define sprite animations. Called after preload completes.
+
+**Animation Keys:**
+
+| Key | Frames | FPS | Loop | Purpose |
+|-----|--------|-----|------|---------|
+| `player-run` | 0-13 | 12 | Yes | Running animation |
+| `player-idle` | 14-17 | 6 | Yes | Idle/standing animation |
+| `player-jump` | 19 | — | No | Jump frame (single) |
+| `player-fall` | 18 | — | No | Falling frame (single) |
+
+```typescript
+// Example: Play running animation
+player.play('player-run');
+
+// Example: Play jump frame
+player.play('player-jump');
+```
+
+---
+
 ## Interfaces
+
+### CharacterDefinition
+
+Defines a playable character's visual and physics properties.
+
+```typescript
+interface CharacterDefinition {
+  id: string;              // Unique identifier
+  name: string;            // Display name for UI
+  texture: string;         // Phaser texture key
+  scale: number;           // Visual scale multiplier
+  hasAnimations: boolean;  // Use animation state machine
+  hasEyes: boolean;        // Add floating eye decorations
+  hitbox: {
+    width: number;         // Physics body width
+    height: number;        // Physics body height
+    offsetX: number;       // X offset from sprite origin
+    offsetY: number;       // Y offset from sprite origin
+  };
+}
+```
+
+**Example:**
+```typescript
+const myCharacter: CharacterDefinition = {
+  id: 'ninja',
+  name: 'Ninja',
+  texture: 'ninja-sprite',
+  scale: 1.5,
+  hasAnimations: true,
+  hasEyes: false,
+  hitbox: { width: 20, height: 40, offsetX: 6, offsetY: 4 },
+};
+```
 
 ### PlatformConfig
 
