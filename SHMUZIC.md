@@ -1,3 +1,4 @@
+# SFX
 [] Each colored platform will have a different sound
     - red
     - green
@@ -44,3 +45,6 @@
   * Confirms return to action; usually the inverse of Pause Open.
 
 [] bruh - every 10% platform there will be a “bruh”
+
+# Soundtrack
+[] "javascript" whispers in the soundtrack
