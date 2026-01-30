@@ -7,7 +7,7 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.spritesheet('player-sprite', 'assets/Running.png', {
+    this.load.spritesheet('player-sprite', 'assets/runner.png', {
       frameWidth: 32,
       frameHeight: 32,
     });
