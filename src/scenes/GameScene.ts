@@ -27,6 +27,8 @@ export class GameScene extends Phaser.Scene {
   private floorStarted: boolean = false;
   private maxScrollSpeed: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
+  private helpHint!: Phaser.GameObjects.Text;
+  private startingY: number = 0;
 
   private get gameWidth(): number {
     return this.cameras.main.width;
@@ -93,6 +95,7 @@ export class GameScene extends Phaser.Scene {
     const playerY = groundTop - PLAYER.HEIGHT / 2 - 1;
     this.player = new Player(this, this.gameWidth / 2, playerY);
     this.highestY = this.player.y;
+    this.startingY = this.player.y;
     this.forcedScrollY = 0;
     this.floorStarted = false;
   }
@@ -114,6 +117,15 @@ export class GameScene extends Phaser.Scene {
     this.scoreText.setOrigin(1, 0);
     this.scoreText.setScrollFactor(0);
     this.scoreText.setDepth(100);
+
+    const hintY = this.gameHeight - PLATFORM.HEIGHT - 30;
+    this.helpHint = this.add.text(this.gameWidth - 20, hintY, 'press / for help', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '14px',
+      color: '#AAAAAA',
+    });
+    this.helpHint.setOrigin(1, 1);
+    this.helpHint.setDepth(100);
 
     this.scale.on('resize', this.onResize, this);
   }
@@ -187,6 +199,10 @@ export class GameScene extends Phaser.Scene {
       this.helpDialog.show();
     } else {
       this.helpDialog.hide();
+    }
+
+    if (this.helpHint.visible && this.player.y < this.startingY - 50) {
+      this.helpHint.setVisible(false);
     }
   }
 
