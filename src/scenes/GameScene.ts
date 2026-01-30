@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { PLATFORM, PLAYER } from '../constants';
+import { PLATFORM, PLAYER, CHARACTER_DEFINITIONS } from '../constants';
 import { Player } from '../entities/Player';
 import { Platform } from '../entities/Platform';
 import { ColorSystem } from '../systems/ColorSystem';
@@ -7,6 +7,7 @@ import { PlatformSpawner } from '../systems/PlatformSpawner';
 import { DifficultyManager } from '../systems/DifficultyManager';
 import { ColorIndicator } from '../ui/ColorIndicator';
 import { HelpDialog } from '../ui/HelpDialog';
+import { CharacterSelector } from '../ui/CharacterSelector';
 
 export class GameScene extends Phaser.Scene {
   private player!: Player;
@@ -16,11 +17,15 @@ export class GameScene extends Phaser.Scene {
   private difficultyManager!: DifficultyManager;
   private colorIndicator!: ColorIndicator;
   private helpDialog!: HelpDialog;
+  private characterSelector!: CharacterSelector;
+  private currentCharacterIndex: number = 0;
+  private hasJumped: boolean = false;
 
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private wasd!: { up: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key };
-  private colorKeys!: { red: Phaser.Input.Keyboard.Key; green: Phaser.Input.Keyboard.Key; blue: Phaser.Input.Keyboard.Key };
-  private helpKey!: Phaser.Input.Keyboard.Key;
+   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+   private wasd!: { up: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key };
+   private colorKeys!: { red: Phaser.Input.Keyboard.Key; green: Phaser.Input.Keyboard.Key; blue: Phaser.Input.Keyboard.Key };
+   private helpKey!: Phaser.Input.Keyboard.Key;
+   private tabKey!: Phaser.Input.Keyboard.Key;
 
   private highestY: number = 0;
   private forcedScrollY: number = 0;
@@ -75,8 +80,9 @@ export class GameScene extends Phaser.Scene {
     };
 
     this.helpKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH);
+    this.tabKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
 
-    this.input.keyboard!.addCapture('W,A,S,D,SPACE,UP,DOWN,LEFT,RIGHT,ONE,TWO,THREE,FORWARD_SLASH');
+    this.input.keyboard!.addCapture('W,A,S,D,SPACE,UP,DOWN,LEFT,RIGHT,ONE,TWO,THREE,FORWARD_SLASH,TAB');
   }
 
   private setupSystems(): void {
@@ -94,6 +100,9 @@ export class GameScene extends Phaser.Scene {
     const groundTop = this.gameHeight - PLATFORM.HEIGHT;
     const playerY = groundTop - PLAYER.HEIGHT / 2 - 1;
     this.player = new Player(this, this.gameWidth / 2, playerY);
+    this.currentCharacterIndex = 0;
+    this.hasJumped = false;
+    this.player.setCharacter(CHARACTER_DEFINITIONS[this.currentCharacterIndex]);
     this.highestY = this.player.y;
     this.startingY = this.player.y;
     this.forcedScrollY = 0;
@@ -107,6 +116,7 @@ export class GameScene extends Phaser.Scene {
   private setupUI(): void {
     this.colorIndicator = new ColorIndicator(this, 20, 20);
     this.helpDialog = new HelpDialog(this);
+    this.characterSelector = new CharacterSelector(this, 20, 55);
 
     this.scoreText = this.add.text(this.gameWidth - 20, 20, '0', {
       fontFamily: 'Arial, sans-serif',
@@ -156,36 +166,55 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  update(_time: number, delta: number): void {
-    this.handleInput();
-    this.updateColorFromKeys();
-    this.updateHelpDialog();
-    this.updatePlatformSolidity();
-    this.updateCamera(delta);
-    this.updateSpawning();
-    this.updateScore();
-    this.checkDeath();
-  }
+   update(_time: number, delta: number): void {
+     this.handleInput();
+     this.handleCharacterSwitch();
+     this.updateColorFromKeys();
+     this.updateHelpDialog();
+     this.updatePlatformSolidity();
+     this.updateCamera(delta);
+     this.updateSpawning();
+     this.updateScore();
+     this.checkDeath();
+   }
 
-  private handleInput(): void {
-    const left = this.cursors.left.isDown || this.wasd.left.isDown;
-    const right = this.cursors.right.isDown || this.wasd.right.isDown;
-    const jump = Phaser.Input.Keyboard.JustDown(this.cursors.up) || 
-                 Phaser.Input.Keyboard.JustDown(this.wasd.up) ||
-                 Phaser.Input.Keyboard.JustDown(this.cursors.space!);
+   private handleInput(): void {
+     const left = this.cursors.left.isDown || this.wasd.left.isDown;
+     const right = this.cursors.right.isDown || this.wasd.right.isDown;
+     const jump = Phaser.Input.Keyboard.JustDown(this.cursors.up) || 
+                  Phaser.Input.Keyboard.JustDown(this.wasd.up) ||
+                  Phaser.Input.Keyboard.JustDown(this.cursors.space!);
 
-    if (left) {
-      this.player.moveLeft();
-    } else if (right) {
-      this.player.moveRight();
-    } else {
-      this.player.stopHorizontal();
-    }
+     if (left) {
+       this.player.moveLeft();
+     } else if (right) {
+       this.player.moveRight();
+     } else {
+       this.player.stopHorizontal();
+     }
 
-    if (jump) {
-      this.player.jump();
-    }
-  }
+     if (jump) {
+       this.player.jump();
+       if (!this.hasJumped) {
+         this.hasJumped = true;
+         this.characterSelector.hide();
+       }
+     }
+   }
+
+   private isOnGround(): boolean {
+     return this.player.y >= this.startingY - 10;
+   }
+
+   private handleCharacterSwitch(): void {
+     if (this.hasJumped) return;
+     if (Phaser.Input.Keyboard.JustDown(this.tabKey) && this.isOnGround()) {
+       this.currentCharacterIndex = (this.currentCharacterIndex + 1) % CHARACTER_DEFINITIONS.length;
+       const character = CHARACTER_DEFINITIONS[this.currentCharacterIndex];
+       this.player.setCharacter(character);
+       this.characterSelector.update(character.name, character.texture);
+     }
+   }
 
   private updateColorFromKeys(): void {
     const red = this.colorKeys.red.isDown;
