@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { PLAYER } from '../constants';
+import { Shadow } from './Shadow';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   private leftEye!: Phaser.GameObjects.Ellipse;
@@ -7,6 +8,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private leftPupil!: Phaser.GameObjects.Ellipse;
   private rightPupil!: Phaser.GameObjects.Ellipse;
   private eyeOffsetY: number;
+  private shadow: Shadow;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'player');
@@ -22,6 +24,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.eyeOffsetY = -PLAYER.HEIGHT * 0.35;
     this.createEyes(scene);
+    this.shadow = new Shadow(scene, -5);
   }
 
   private createEyes(scene: Phaser.Scene): void {
@@ -43,6 +46,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.rightEye.setPosition(this.x + PLAYER.WIDTH * 0.2, this.y + this.eyeOffsetY);
     this.leftPupil.setPosition(this.x - PLAYER.WIDTH * 0.2, this.y + this.eyeOffsetY);
     this.rightPupil.setPosition(this.x + PLAYER.WIDTH * 0.2, this.y + this.eyeOffsetY);
+
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    const isGrounded = body.blocked.down || body.touching.down;
+    const camera = this.scene.cameras.main;
+    this.shadow.update(this.x, this.y, PLAYER.WIDTH, PLAYER.HEIGHT, isGrounded, camera.scrollY);
   }
 
   moveLeft(): void {
@@ -74,6 +82,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.rightEye?.destroy();
     this.leftPupil?.destroy();
     this.rightPupil?.destroy();
+    this.shadow.destroy();
     super.destroy(fromScene);
   }
 }

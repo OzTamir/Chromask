@@ -36,14 +36,14 @@ Maps `GameColor` enum values to hex color codes for rendering.
 
 ```typescript
 const COLOR_HEX: Record<GameColor, number> = {
-  [GameColor.RED]:     0xFF3333,
-  [GameColor.GREEN]:   0x33FF33,
-  [GameColor.BLUE]:    0x3333FF,
-  [GameColor.YELLOW]:  0xFFFF33,
-  [GameColor.MAGENTA]: 0xFF33FF,
-  [GameColor.CYAN]:    0x33FFFF,
-  [GameColor.WHITE]:   0xFFFFFF,
-  [GameColor.NONE]:    0x333333,  // Dark gray (UI only)
+  [GameColor.RED]:     0xFF0044, // Bright cherry red
+  [GameColor.GREEN]:   0x00FF55, // Electric green
+  [GameColor.BLUE]:    0x0088FF, // Electric blue
+  [GameColor.YELLOW]:  0xFFDD00, // Sunny yellow
+  [GameColor.MAGENTA]: 0xFF00AA, // Hot magenta
+  [GameColor.CYAN]:    0x00FFFF, // Cyan
+  [GameColor.WHITE]:   0xFFFFFF, // Pure white
+  [GameColor.NONE]:    0x888888, // Light gray (UI only)
 };
 ```
 
@@ -54,8 +54,8 @@ const PLAYER = {
   MOVE_SPEED: 300,        // Horizontal speed (pixels/second)
   JUMP_VELOCITY: -500,    // Jump velocity (negative = upward)
   GRAVITY: 800,           // Gravity acceleration (pixels/second²)
-  WIDTH: 32,              // Hitbox width
-  HEIGHT: 32,             // Hitbox height
+  WIDTH: 24,              // Hitbox width (Thomas Was Alone style rectangle)
+  HEIGHT: 48,             // Hitbox height
 };
 ```
 
@@ -159,6 +159,49 @@ Disable all colors (returns to NONE).
 
 ---
 
+### VISUAL Constants
+
+```typescript
+const VISUAL = {
+  PLATFORM_INACTIVE_ALPHA: 0.3,   // Alpha for non-solid platforms
+  PLATFORM_ACTIVE_ALPHA: 1.0,     // Alpha for solid platforms
+  ALPHA_TRANSITION_MS: 150,       // Transition duration
+  SHADOW_ALPHA: 0.08,             // Very soft shadow (Thomas Was Alone style)
+  SHADOW_LIGHT_ANGLE: 45,         // Light source angle (45 = top-right, shadow down-left)
+  SHADOW_SPREAD: 15,              // Shadow spread at the end (perspective width)
+};
+```
+
+---
+
+### Shadow
+
+Thomas Was Alone style shadow - soft, elongated shadows extending from entities to bottom of screen.
+
+#### Methods
+
+**`update(x: number, y: number, width: number, height: number, isGrounded: boolean, cameraScrollY: number): void`**
+
+Update shadow position and visibility. Shadow extends from entity to bottom of screen. Shadow only renders when `isGrounded` is true.
+
+```typescript
+shadow.update(this.x, this.y, width, height, isGrounded, camera.scrollY);
+```
+
+**`setDepth(depth: number): void`**
+
+Set render depth for the shadow.
+
+**`clear(): void`**
+
+Clear the shadow graphics without destroying them.
+
+**`destroy(): void`**
+
+Clean up graphics resources.
+
+---
+
 ### Player
 
 Player entity with physics and movement controls. Extends `Phaser.Physics.Arcade.Sprite`.
@@ -203,13 +246,21 @@ If true, platform ignores color matching (e.g., starting floor).
 
 #### Methods
 
-**`setSolid(isSolid: boolean): void`**
+**`setSolid(isSolid: boolean, camera?: Phaser.Cameras.Scene2D.Camera): void`**
 
-Enable or disable collision. Updates visual alpha and border visibility. No effect if `alwaysSolid` is true or platform has been contacted.
+Enable or disable collision. Updates visual alpha and border visibility. Shadow is only rendered if platform is visible on screen (within camera bounds with 50px margin). No effect if `alwaysSolid` is true or platform has been contacted.
 
 ```typescript
-platform.setSolid(colorSystem.isColorActive(platform.platformColor));
+platform.setSolid(colorSystem.isColorActive(platform.platformColor), this.cameras.main);
 ```
+
+**`isOnScreen(camera: Phaser.Cameras.Scene2D.Camera): boolean`**
+
+Check if platform is within camera bounds (with 50px margin).
+
+**`updateShadow(camera?: Phaser.Cameras.Scene2D.Camera): void`**
+
+Update shadow rendering. Shadow only renders if platform is on screen.
 
 **`markContacted(): void`**
 

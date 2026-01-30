@@ -23,16 +23,16 @@ export enum GameColor {
   WHITE   = 0b111,  // 7 (R + G + B)
 }
 
-/** Hex color values for rendering - Thomas was Alone inspired matte colors */
+/** Hex color values for rendering - bold, vibrant, candy-like colors */
 export const COLOR_HEX: Record<GameColor, number> = {
-  [GameColor.NONE]:    0x555555, // Gray (for UI only)
-  [GameColor.RED]:     0xCC3333, // Muted red
-  [GameColor.GREEN]:   0x33AA33, // Muted green
-  [GameColor.BLUE]:    0x3366CC, // Muted blue
-  [GameColor.YELLOW]:  0xCCCC33, // Muted yellow
-  [GameColor.MAGENTA]: 0xAA33AA, // Muted magenta
-  [GameColor.CYAN]:    0x33CCCC, // Muted cyan
-  [GameColor.WHITE]:   0xEEEEEE, // Off-white
+  [GameColor.NONE]:    0x888888, // Light gray (for UI only)
+  [GameColor.RED]:     0xFF0044, // Bright cherry red
+  [GameColor.GREEN]:   0x00FF55, // Electric green
+  [GameColor.BLUE]:    0x0088FF, // Electric blue
+  [GameColor.YELLOW]:  0xFFDD00, // Sunny yellow
+  [GameColor.MAGENTA]: 0xFF00AA, // Hot magenta
+  [GameColor.CYAN]:    0x00FFFF, // Cyan
+  [GameColor.WHITE]:   0xFFFFFF, // Pure white
 };
 
 // =============================================================================
@@ -117,7 +117,7 @@ export const DIFFICULTY = {
 export const GAME = {
   WIDTH: 480,
   HEIGHT: 720,
-  BACKGROUND_COLOR: 0x2D2D2D, // Dark warm gray like Thomas was Alone background
+  BACKGROUND_COLOR: 0xFFF8E7, // Warm cream
 } as const;
 
 // =============================================================================
@@ -144,6 +144,12 @@ export const VISUAL = {
   PLATFORM_ACTIVE_ALPHA: 1.0,
   /** Duration of alpha transition in ms */
   ALPHA_TRANSITION_MS: 150,
+  /** Shadow opacity (0-1) - very soft Thomas Was Alone style */
+  SHADOW_ALPHA: 0.08,
+  /** Shadow light source angle in degrees (45 = light from top-right, shadow down-left) */
+  SHADOW_LIGHT_ANGLE: 45,
+  /** Shadow spread at the end (perspective width) */
+  SHADOW_SPREAD: 15,
 } as const;
 
 // =============================================================================
