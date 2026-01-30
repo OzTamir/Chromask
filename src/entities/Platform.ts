@@ -64,36 +64,35 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
     this.contacted = true;
     this.setAlpha(VISUAL.PLATFORM_ACTIVE_ALPHA);
     this.borderGraphics?.setVisible(false);
+    this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, 0);
   }
 
   isContacted(): boolean {
     return this.contacted;
   }
 
-  setSolid(isSolid: boolean, camera?: Phaser.Cameras.Scene2D.Camera): void {
+  setSolid(isSolid: boolean): void {
     if (this.alwaysSolid || this.contacted) return;
 
     const body = this.body as Phaser.Physics.Arcade.StaticBody;
     body.enable = isSolid;
     this.setAlpha(isSolid ? VISUAL.PLATFORM_ACTIVE_ALPHA : VISUAL.PLATFORM_INACTIVE_ALPHA);
     this.borderGraphics?.setVisible(!isSolid);
-
-    const isVisible = camera ? this.isOnScreen(camera) : true;
-    if (isVisible) {
-      this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, camera?.scrollY ?? 0);
-    } else {
-      this.shadow.clear();
-    }
   }
 
   isOnScreen(camera: Phaser.Cameras.Scene2D.Camera): boolean {
     const margin = 50;
     const top = camera.scrollY - margin;
-    const bottom = camera.scrollY + camera.height + margin;
+    const bottom = camera.height + camera.scrollY + margin;
     return this.y > top && this.y < bottom;
   }
 
   updateShadow(camera?: Phaser.Cameras.Scene2D.Camera): void {
+    if (!this.contacted) {
+      this.shadow.clear();
+      return;
+    }
+
     const isVisible = camera ? this.isOnScreen(camera) : true;
     if (isVisible) {
       this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, camera?.scrollY ?? 0);
