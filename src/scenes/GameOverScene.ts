@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { GAME } from '../constants';
 
 export class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -7,7 +6,7 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   create(data: { score: number }): void {
-    const { width, height } = { width: GAME.WIDTH, height: GAME.HEIGHT };
+    const { width, height } = this.cameras.main;
     
     this.add.text(width / 2, height / 3, 'GAME OVER', {
       fontSize: '48px',

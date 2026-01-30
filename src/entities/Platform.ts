@@ -23,14 +23,15 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this, true);
 
+    this.setDisplaySize(this.platformWidth, PLATFORM.HEIGHT);
+    const body = this.body as Phaser.Physics.Arcade.StaticBody;
+    body.setSize(this.platformWidth, PLATFORM.HEIGHT);
+    body.setOffset((PLATFORM.WIDTH - this.platformWidth) / 2, 0);
+    body.updateFromGameObject();
+
     if (this.alwaysSolid) {
       this.clearTint();
       this.setAlpha(VISUAL.PLATFORM_ACTIVE_ALPHA);
-      this.setDisplaySize(this.platformWidth, PLATFORM.HEIGHT);
-      const body = this.body as Phaser.Physics.Arcade.StaticBody;
-      body.setSize(this.platformWidth, PLATFORM.HEIGHT);
-      body.setOffset((PLATFORM.WIDTH - this.platformWidth) / 2, 0);
-      body.updateFromGameObject();
     } else {
       this.setTint(COLOR_HEX[color]);
       this.setAlpha(VISUAL.PLATFORM_INACTIVE_ALPHA);

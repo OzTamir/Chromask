@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { PLAYER, GAME } from '../constants';
+import { PLAYER } from '../constants';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number) {
@@ -34,8 +34,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  isBelowScreen(cameraScrollY: number): boolean {
-    const deathThreshold = cameraScrollY + GAME.HEIGHT + 50;
+  isBelowScreen(cameraScrollY: number, cameraHeight: number): boolean {
+    const deathThreshold = cameraScrollY + cameraHeight + 50;
     return this.y > deathThreshold;
   }
 }

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME, PLATFORM, PLAYER } from '../constants';
+import { PLATFORM, PLAYER } from '../constants';
 import { Player } from '../entities/Player';
 import { Platform } from '../entities/Platform';
 import { ColorSystem } from '../systems/ColorSystem';
@@ -25,6 +25,14 @@ export class GameScene extends Phaser.Scene {
   private maxScrollSpeed: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
 
+  private get gameWidth(): number {
+    return this.cameras.main.width;
+  }
+
+  private get gameHeight(): number {
+    return this.cameras.main.height;
+  }
+
   constructor() {
     super({ key: 'GameScene' });
   }
@@ -43,7 +51,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setupPhysicsWorld(): void {
-    this.physics.world.setBounds(0, -100000, GAME.WIDTH, 200000);
+    this.physics.world.setBounds(0, -100000, this.gameWidth, 200000);
   }
 
   private setupInput(): void {
@@ -69,16 +77,16 @@ export class GameScene extends Phaser.Scene {
 
     this.platforms = this.physics.add.staticGroup();
     this.platformSpawner = new PlatformSpawner(this, this.platforms);
-    this.platformSpawner.createInitialPlatforms();
+    this.platformSpawner.createInitialPlatforms(this.gameWidth, this.gameHeight);
 
-    const playerStartY = GAME.HEIGHT - PLATFORM.HEIGHT - PLAYER.HEIGHT / 2;
+    const playerStartY = this.gameHeight - PLATFORM.HEIGHT - PLAYER.HEIGHT / 2;
     this.difficultyManager = new DifficultyManager(playerStartY);
   }
 
   private setupPlayer(): void {
-    const groundTop = GAME.HEIGHT - PLATFORM.HEIGHT;
+    const groundTop = this.gameHeight - PLATFORM.HEIGHT;
     const playerY = groundTop - PLAYER.HEIGHT / 2 - 1;
-    this.player = new Player(this, GAME.WIDTH / 2, playerY);
+    this.player = new Player(this, this.gameWidth / 2, playerY);
     this.highestY = this.player.y;
     this.forcedScrollY = 0;
     this.floorStarted = false;
@@ -89,9 +97,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setupUI(): void {
-    this.colorIndicator = new ColorIndicator(this, 30, 30);
+    this.colorIndicator = new ColorIndicator(this, 20, 20);
 
-    this.scoreText = this.add.text(GAME.WIDTH - 20, 20, 'Score: 0', {
+    this.scoreText = this.add.text(this.gameWidth - 20, 20, 'Height: 0', {
       fontFamily: 'monospace',
       fontSize: '20px',
       color: '#ffffff',
@@ -99,6 +107,14 @@ export class GameScene extends Phaser.Scene {
     this.scoreText.setOrigin(1, 0);
     this.scoreText.setScrollFactor(0);
     this.scoreText.setDepth(100);
+
+    this.scale.on('resize', this.onResize, this);
+  }
+
+  private onResize(gameSize: Phaser.Structs.Size): void {
+    this.cameras.main.setSize(gameSize.width, gameSize.height);
+    this.physics.world.setBounds(0, -100000, gameSize.width, 200000);
+    this.scoreText.setX(gameSize.width - 20);
   }
 
   private setupCollision(): void {
@@ -181,7 +197,7 @@ export class GameScene extends Phaser.Scene {
       this.forcedScrollY -= scrollSpeed * (delta / 1000);
     }
 
-    const targetScrollY = this.player.y - GAME.HEIGHT / 2;
+    const targetScrollY = this.player.y - this.gameHeight / 2;
     const ratchetedScroll = Math.min(targetScrollY, this.cameras.main.scrollY);
     const finalScroll = Math.min(ratchetedScroll, this.forcedScrollY);
     
@@ -207,7 +223,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private checkDeath(): void {
-    if (this.player.isBelowScreen(this.cameras.main.scrollY)) {
+    if (this.player.isBelowScreen(this.cameras.main.scrollY, this.gameHeight)) {
       const pixelHeight = this.difficultyManager.getHeightClimbed(this.highestY);
       const score = this.difficultyManager.getPlatformHeight(pixelHeight);
       this.scene.start('GameOverScene', { score });
