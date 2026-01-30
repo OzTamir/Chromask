@@ -121,11 +121,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   setCharacter(character: CharacterDefinition): void {
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    const feetY = body.bottom;
+    const spriteX = this.x;
+
     this.currentCharacter = character;
     this.setTexture(character.texture);
     this.setScale(character.scale);
     this.setSize(character.hitbox.width, character.hitbox.height);
     this.setOffset(character.hitbox.offsetX, character.hitbox.offsetY);
+
+    const targetBodyY = feetY - character.hitbox.height;
+    const targetBodyX = spriteX + character.hitbox.offsetX;
+
+    body.reset(targetBodyX, targetBodyY);
 
     if (!character.hasAnimations) {
       this.anims.stop();
