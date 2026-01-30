@@ -21,6 +21,7 @@ export class GameScene extends Phaser.Scene {
 
   private highestY: number = 0;
   private forcedScrollY: number = 0;
+  private floorStarted: boolean = false;
   private scoreText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -76,6 +77,7 @@ export class GameScene extends Phaser.Scene {
     this.player = new Player(this, GAME.WIDTH / 2, playerY);
     this.highestY = this.player.y;
     this.forcedScrollY = 0;
+    this.floorStarted = false;
   }
 
   private setupCamera(): void {
@@ -157,7 +159,14 @@ export class GameScene extends Phaser.Scene {
     const heightClimbed = this.difficultyManager.getHeightClimbed(this.highestY);
     const scrollSpeed = this.difficultyManager.getScrollSpeed(heightClimbed);
     
-    this.forcedScrollY -= scrollSpeed * (delta / 1000);
+    if (scrollSpeed > 0 && !this.floorStarted) {
+      this.floorStarted = true;
+      this.forcedScrollY = this.cameras.main.scrollY;
+    }
+    
+    if (this.floorStarted) {
+      this.forcedScrollY -= scrollSpeed * (delta / 1000);
+    }
 
     const targetScrollY = this.player.y - GAME.HEIGHT / 2;
     const ratchetedScroll = Math.min(targetScrollY, this.cameras.main.scrollY);

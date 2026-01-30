@@ -23,6 +23,6 @@ export class DifficultyManager {
     const progressRange = DIFFICULTY.MAX_DIFFICULTY_HEIGHT - DIFFICULTY.FLOOR_START_HEIGHT;
     const progress = Math.min((heightClimbed - DIFFICULTY.FLOOR_START_HEIGHT) / progressRange, 1);
 
-    return DIFFICULTY.MAX_SCROLL_SPEED * progress * progress;
+    return DIFFICULTY.INITIAL_SCROLL_SPEED + (DIFFICULTY.MAX_SCROLL_SPEED - DIFFICULTY.INITIAL_SCROLL_SPEED) * progress;
   }
 }

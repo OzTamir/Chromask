@@ -73,8 +73,8 @@ export const PLATFORM = {
 
 export const DIFFICULTY = {
   // Scroll speed (camera push)
-  INITIAL_SCROLL_SPEED: 0,      // No forced scroll at start
-  MAX_SCROLL_SPEED: 100,        // pixels/second
+  INITIAL_SCROLL_SPEED: 30,     // Starting speed when floor mechanic kicks in
+  MAX_SCROLL_SPEED: 100,        // pixels/second at max difficulty
   SCROLL_ACCELERATION: 0.5,     // per second
   
   // Platform spacing
