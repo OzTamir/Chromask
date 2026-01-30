@@ -26,8 +26,7 @@ export class Shadow {
     }
 
     const alpha = VISUAL.SHADOW_ALPHA;
-    const startOffsetY = height * 0.8;
-    const entityBottomY = y - height / 2 + startOffsetY;
+    const entityBottomY = y + height / 2;
 
     const screenBottom = cameraScrollY + GAME.HEIGHT;
     const shadowLength = screenBottom - entityBottomY;
