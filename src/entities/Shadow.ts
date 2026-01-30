@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { VISUAL, GAME } from '../constants';
+import { VISUAL } from '../constants';
 
 export class Shadow {
   private graphics: Phaser.GameObjects.Graphics;
@@ -17,7 +17,8 @@ export class Shadow {
     width: number,
     height: number,
     isGrounded: boolean = false,
-    cameraScrollY: number = 0
+    cameraScrollY: number = 0,
+    cameraHeight: number = 720
   ): void {
     this.graphics.clear();
 
@@ -28,15 +29,16 @@ export class Shadow {
     const alpha = VISUAL.SHADOW_ALPHA;
     const entityBottomY = y + height / 2;
 
-    const screenBottom = cameraScrollY + GAME.HEIGHT;
-    const shadowLength = screenBottom - entityBottomY;
+    const screenBottom = cameraScrollY + cameraHeight;
+    const maxShadowLength = 500;
+    const shadowLength = Math.min(screenBottom - entityBottomY, maxShadowLength);
 
     if (shadowLength <= 0) {
       return;
     }
 
     const lightAngleRad = (VISUAL.SHADOW_LIGHT_ANGLE * Math.PI) / 180;
-    const lightDirX = Math.cos(lightAngleRad);
+    const lightDirX = -Math.cos(lightAngleRad);
 
     const endX = x + shadowLength * lightDirX;
     const endY = screenBottom;
@@ -47,9 +49,9 @@ export class Shadow {
 
     this.graphics.beginPath();
     this.graphics.moveTo(x - width / 2, entityBottomY);
-    this.graphics.lineTo(endX - width / 2 + spreadOffset, endY);
-    this.graphics.lineTo(endX + width / 2 + spreadOffset, endY);
     this.graphics.lineTo(x + width / 2, entityBottomY);
+    this.graphics.lineTo(endX + width / 2 + spreadOffset, endY);
+    this.graphics.lineTo(endX - width / 2 + spreadOffset, endY);
     this.graphics.closePath();
     this.graphics.fillPath();
   }

@@ -79,7 +79,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const isGrounded = body.blocked.down || body.touching.down;
     const camera = this.scene.cameras.main;
     const char = this.currentCharacter;
-    this.shadow.update(this.x, this.y, char.hitbox.width * char.scale, char.hitbox.height * char.scale, isGrounded, camera.scrollY);
+    this.shadow.update(this.x, this.y, char.hitbox.width * char.scale, char.hitbox.height * char.scale, isGrounded, camera.scrollY, camera.height);
   }
 
   private updateAnimation(): void {

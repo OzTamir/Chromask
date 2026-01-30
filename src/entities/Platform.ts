@@ -94,8 +94,8 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
     }
 
     const isVisible = camera ? this.isOnScreen(camera) : true;
-    if (isVisible) {
-      this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, camera?.scrollY ?? 0);
+    if (isVisible && camera) {
+      this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, camera.scrollY, camera.height);
     } else {
       this.shadow.clear();
     }
