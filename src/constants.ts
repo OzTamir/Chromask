@@ -47,6 +47,7 @@ export interface CharacterDefinition {
   hasAnimations: boolean;
   hasEyes: boolean;
   hitbox: { width: number; height: number; offsetX: number; offsetY: number };
+  colorSwap?: { keyHue: number; hueRange: number };
 }
 
 export const CHARACTER = {
@@ -58,6 +59,7 @@ export const CHARACTER = {
     hasAnimations: true,
     hasEyes: false,
     hitbox: { width: 24, height: 32, offsetX: 4, offsetY: 0 },
+    colorSwap: { keyHue: 230, hueRange: 30 },
   } as CharacterDefinition,
   CLASSIC: {
     id: 'classic',
@@ -67,6 +69,7 @@ export const CHARACTER = {
     hasAnimations: false,
     hasEyes: true,
     hitbox: { width: 24, height: 48, offsetX: 0, offsetY: 0 },
+    colorSwap: { keyHue: 252, hueRange: 30 },
   } as CharacterDefinition,
   CAT: {
     id: 'cat',
@@ -76,6 +79,7 @@ export const CHARACTER = {
     hasAnimations: true,
     hasEyes: false,
     hitbox: { width: 24, height: 20, offsetX: 4, offsetY: 8 },
+    colorSwap: { keyHue: 38, hueRange: 30 },
   } as CharacterDefinition,
 };
 
