@@ -12,6 +12,11 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.RESIZE,
     width: '100%',
     height: '100%',
+    autoRound: true,
+  },
+  render: {
+    antialias: true,
+    roundPixels: true,
   },
   input: {
     keyboard: true,
