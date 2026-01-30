@@ -17,19 +17,22 @@ Open http://localhost:5173
 |--------|------|
 | Move | Arrow keys / WASD |
 | Jump | Up / W / Space |
-| Toggle Red | 1 |
-| Toggle Green | 2 |
-| Toggle Blue | 3 |
+| Hold Red | 1 |
+| Hold Green | 2 |
+| Hold Blue | 3 |
 
 ## How to Play
 
 Platforms are only solid when their color **exactly matches** your active color.
 
-Toggle R, G, B to mix colors additively:
-- Red + Green = Yellow
-- Red + Blue = Magenta
-- Green + Blue = Cyan
-- All three = White
+Hold color keys to activate colors. Combine by holding multiple keys:
+- 1 = Red
+- 2 = Green
+- 3 = Blue
+- 1+2 = Yellow
+- 1+3 = Magenta
+- 2+3 = Cyan
+- 1+2+3 = White
 
 Climb as high as you can. Fall off the screen = game over.
 
