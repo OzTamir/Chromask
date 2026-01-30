@@ -10,6 +10,9 @@ const config: Phaser.Types.Core.GameConfig = {
   height: GAME.HEIGHT,
   parent: 'game-container',
   backgroundColor: GAME.BACKGROUND_COLOR,
+  input: {
+    keyboard: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {
