@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { PLATFORM, PLAYER, CHARACTER_DEFINITIONS, AUDIO, STORAGE } from '../constants';
+import { PLATFORM, PLAYER, CHARACTER_DEFINITIONS, AUDIO, STORAGE, VISUAL } from '../constants';
 import { Player } from '../entities/Player';
 import { Platform } from '../entities/Platform';
 import { ColorSystem } from '../systems/ColorSystem';
@@ -55,6 +55,10 @@ export class GameScene extends Phaser.Scene {
   create(): void {
      // Reset all scene state for new game (scene object is reused by Phaser)
      this.maxScrollSpeed = 0;
+
+    // Randomize shadow angle for this game (light from above, random horizontal direction)
+    const angleRange = VISUAL.SHADOW_ANGLE_MAX - VISUAL.SHADOW_ANGLE_MIN;
+    VISUAL.SHADOW_LIGHT_ANGLE = VISUAL.SHADOW_ANGLE_MIN + Math.random() * angleRange;
 
     this.setupPhysicsWorld();
     this.setupInput();

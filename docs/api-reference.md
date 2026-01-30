@@ -113,11 +113,18 @@ const DIFFICULTY = {
 
 ```typescript
 const VISUAL = {
-  PLATFORM_INACTIVE_ALPHA: 0.4,   // Alpha for non-solid platforms
-  PLATFORM_ACTIVE_ALPHA: 1.0,     // Alpha for solid platforms
-  ALPHA_TRANSITION_MS: 100,       // Transition duration
+  PLATFORM_INACTIVE_ALPHA: 0.3,         // Alpha for non-solid platforms
+  PLATFORM_ACTIVE_ALPHA: 1.0,           // Alpha for solid platforms
+  ALPHA_TRANSITION_MS: 150,             // Transition duration in ms
+  SHADOW_ALPHA: 0.08,                   // Shadow opacity (0-1)
+  SHADOW_LIGHT_ANGLE: 90,               // Shadow angle in degrees (default 90° = light from top)
+  SHADOW_ANGLE_MIN: 30,                 // Minimum random shadow angle
+  SHADOW_ANGLE_MAX: 150,                // Maximum random shadow angle
+  SHADOW_SPREAD: 15,                    // Shadow spread at the end (perspective width)
 };
 ```
+
+Shadow angles are randomized each game (30°-150°) to ensure the light source never comes from below. Lower angles (30°) cast shadows down-right, higher angles (150°) cast shadows down-left. 90° casts shadows straight down.
 
 ### HELP_DIALOG Constants
 
@@ -257,14 +264,18 @@ Disable all colors (returns to NONE).
 
 ```typescript
 const VISUAL = {
-  PLATFORM_INACTIVE_ALPHA: 0.3,   // Alpha for non-solid platforms
-  PLATFORM_ACTIVE_ALPHA: 1.0,     // Alpha for solid platforms
-  ALPHA_TRANSITION_MS: 150,       // Transition duration
-  SHADOW_ALPHA: 0.08,             // Very soft shadow (Thomas Was Alone style)
-  SHADOW_LIGHT_ANGLE: 30,         // Light source angle (30 = gentle diagonal, shadow down-left)
-  SHADOW_SPREAD: 15,              // Shadow spread at the end (perspective width)
+  PLATFORM_INACTIVE_ALPHA: 0.3,         // Alpha for non-solid platforms
+  PLATFORM_ACTIVE_ALPHA: 1.0,           // Alpha for solid platforms
+  ALPHA_TRANSITION_MS: 150,             // Transition duration in ms
+  SHADOW_ALPHA: 0.08,                   // Shadow opacity (0-1)
+  SHADOW_LIGHT_ANGLE: 90,               // Shadow angle in degrees (default 90° = light from top)
+  SHADOW_ANGLE_MIN: 30,                 // Minimum random shadow angle
+  SHADOW_ANGLE_MAX: 150,                // Maximum random shadow angle
+  SHADOW_SPREAD: 15,                    // Shadow spread at the end (perspective width)
 };
 ```
+
+Shadow angles are randomized each game (30°-150°) to ensure the light source never comes from below. Lower angles (30°) cast shadows down-right, higher angles (150°) cast shadows down-left. 90° casts shadows straight down.
 
 ---
 
@@ -274,16 +285,19 @@ Thomas Was Alone style shadow - soft, elongated shadows extending from entities 
 
 #### Methods
 
-**`update(x: number, y: number, width: number, height: number, isGrounded: boolean, cameraScrollY: number): void`**
+**`update(x: number, y: number, width: number, height: number, isGrounded: boolean, cameraScrollY: number, cameraHeight: number, lightAngle?: number): void`**
 
-Update shadow position and visibility. Shadow extends from entity to bottom of screen. Pass `isGrounded=true` to always render (player), or check grounded state for other entities.
+Update shadow position and visibility. Shadow extends from entity to bottom of screen. Pass `isGrounded=true` to always render (player), or check grounded state for other entities. `lightAngle` defaults to `VISUAL.SHADOW_LIGHT_ANGLE`.
 
 ```typescript
-// Player shadow - always render
-shadow.update(this.x, this.y, width, height, true, camera.scrollY);
+// Player shadow - always render with current angle
+shadow.update(this.x, this.y, width, height, true, camera.scrollY, camera.height);
 
 // Platform shadow - only render when contacted
-shadow.update(this.x, this.y, width, height, this.isContacted(), camera.scrollY);
+shadow.update(this.x, this.y, width, height, this.isContacted(), camera.scrollY, camera.height);
+
+// Custom angle for special effects
+shadow.update(this.x, this.y, width, height, true, camera.scrollY, camera.height, 45);
 ```
 
 **`setDepth(depth: number): void`**

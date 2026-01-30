@@ -64,7 +64,7 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
     this.contacted = true;
     this.setAlpha(VISUAL.PLATFORM_ACTIVE_ALPHA);
     this.borderGraphics?.setVisible(false);
-    this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, 0);
+    this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, 0, 0, VISUAL.SHADOW_LIGHT_ANGLE);
   }
 
   isContacted(): boolean {
@@ -95,7 +95,7 @@ export class Platform extends Phaser.Physics.Arcade.Sprite {
 
     const isVisible = camera ? this.isOnScreen(camera) : true;
     if (isVisible && camera) {
-      this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, camera.scrollY, camera.height);
+      this.shadow.update(this.x, this.y, this.displayWidth, this.displayHeight, true, camera.scrollY, camera.height, VISUAL.SHADOW_LIGHT_ANGLE);
     } else {
       this.shadow.clear();
     }

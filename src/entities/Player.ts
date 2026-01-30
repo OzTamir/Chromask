@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { PLAYER, CharacterDefinition, CHARACTER } from '../constants';
+import { PLAYER, CharacterDefinition, CHARACTER, VISUAL } from '../constants';
 import { Shadow } from './Shadow';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -77,7 +77,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const isGrounded = body.blocked.down || body.touching.down;
     const camera = this.scene.cameras.main;
     const char = this.currentCharacter;
-    this.shadow.update(this.x, this.y, char.hitbox.width * char.scale, char.hitbox.height * char.scale, isGrounded, camera.scrollY, camera.height);
+    this.shadow.update(this.x, this.y, char.hitbox.width * char.scale, char.hitbox.height * char.scale, isGrounded, camera.scrollY, camera.height, VISUAL.SHADOW_LIGHT_ANGLE);
   }
 
   private updateAnimation(): void {

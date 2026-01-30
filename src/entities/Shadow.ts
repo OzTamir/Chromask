@@ -18,7 +18,8 @@ export class Shadow {
     height: number,
     isGrounded: boolean = false,
     cameraScrollY: number = 0,
-    cameraHeight: number = 720
+    cameraHeight: number = 720,
+    lightAngle: number = VISUAL.SHADOW_LIGHT_ANGLE
   ): void {
     this.graphics.clear();
 
@@ -37,7 +38,7 @@ export class Shadow {
       return;
     }
 
-    const lightAngleRad = (VISUAL.SHADOW_LIGHT_ANGLE * Math.PI) / 180;
+    const lightAngleRad = (lightAngle * Math.PI) / 180;
     const lightDirX = -Math.cos(lightAngleRad);
 
     const endX = x + shadowLength * lightDirX;

@@ -196,11 +196,15 @@ export const VISUAL = {
   ALPHA_TRANSITION_MS: 150,
   /** Shadow opacity (0-1) - very soft Thomas Was Alone style */
   SHADOW_ALPHA: 0.08,
-  /** Shadow light source angle in degrees (30 = light from top-right, shadow down-left) */
-  SHADOW_LIGHT_ANGLE: 30,
+  /** Shadow light source angle in degrees - randomized each game (30 = light from top-right, shadow down-left) */
+  SHADOW_LIGHT_ANGLE: 90,
+  /** Minimum random shadow angle (light from top-right) */
+  SHADOW_ANGLE_MIN: 30,
+  /** Maximum random shadow angle (light from top-left) */
+  SHADOW_ANGLE_MAX: 150,
   /** Shadow spread at the end (perspective width) */
   SHADOW_SPREAD: 15,
-} as const;
+};
 
 // =============================================================================
 // STORAGE
