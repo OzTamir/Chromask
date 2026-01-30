@@ -36,6 +36,46 @@ export const COLOR_HEX: Record<GameColor, number> = {
 };
 
 // =============================================================================
+// CHARACTER DEFINITIONS
+// =============================================================================
+
+export interface CharacterDefinition {
+  id: string;
+  name: string;
+  texture: string;
+  scale: number;
+  hasAnimations: boolean;
+  hasEyes: boolean;
+  hitbox: { width: number; height: number; offsetX: number; offsetY: number };
+}
+
+export const CHARACTER = {
+  RUNNER: {
+    id: 'runner',
+    name: 'Runner',
+    texture: 'player-sprite',
+    scale: 2,
+    hasAnimations: true,
+    hasEyes: false,
+    hitbox: { width: 24, height: 28, offsetX: 4, offsetY: 2 },
+  } as CharacterDefinition,
+  CLASSIC: {
+    id: 'classic',
+    name: 'Classic',
+    texture: 'player',
+    scale: 1,
+    hasAnimations: false,
+    hasEyes: true,
+    hitbox: { width: 24, height: 48, offsetX: 0, offsetY: 0 },
+  } as CharacterDefinition,
+};
+
+export const CHARACTER_DEFINITIONS: CharacterDefinition[] = [
+  CHARACTER.RUNNER,
+  CHARACTER.CLASSIC,
+];
+
+// =============================================================================
 // PLAYER PHYSICS
 // =============================================================================
 
