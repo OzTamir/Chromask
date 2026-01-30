@@ -35,6 +35,7 @@ export class HelpDialog extends Phaser.GameObjects.Container {
       color: HELP_DIALOG.TEXT_COLOR,
       lineSpacing: 8,
       align: 'left',
+      resolution: window.devicePixelRatio,
     };
 
     const text = scene.add.text(0, 0, helpContent.join('\n'), textStyle);

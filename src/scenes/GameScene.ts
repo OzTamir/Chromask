@@ -113,6 +113,7 @@ export class GameScene extends Phaser.Scene {
       fontSize: '24px',
       color: '#EEEEEE',
       fontStyle: 'bold',
+      resolution: window.devicePixelRatio,
     });
     this.scoreText.setOrigin(1, 0);
     this.scoreText.setScrollFactor(0);
@@ -123,6 +124,7 @@ export class GameScene extends Phaser.Scene {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
       color: '#AAAAAA',
+      resolution: window.devicePixelRatio,
     });
     this.helpHint.setOrigin(1, 1);
     this.helpHint.setDepth(100);

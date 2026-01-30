@@ -13,6 +13,7 @@ export class GameOverScene extends Phaser.Scene {
       fontSize: '36px',
       color: '#EEEEEE',
       fontStyle: 'bold',
+      resolution: window.devicePixelRatio,
     }).setOrigin(0.5);
 
     this.add.text(width / 2, height / 2, `${data.score ?? 0}`, {
@@ -20,12 +21,14 @@ export class GameOverScene extends Phaser.Scene {
       fontSize: '64px',
       color: '#CCCCCC',
       fontStyle: 'bold',
+      resolution: window.devicePixelRatio,
     }).setOrigin(0.5);
 
     this.add.text(width / 2, height * 0.7, 'Press SPACE', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '18px',
       color: '#888888',
+      resolution: window.devicePixelRatio,
     }).setOrigin(0.5);
 
     this.input.keyboard?.once('keydown-SPACE', () => {
