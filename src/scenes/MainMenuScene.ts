@@ -51,41 +51,53 @@ export class MainMenuScene extends Phaser.Scene {
       }
     );
 
+    const titleBottom = height * 0.3;
+    const footerTop = height * 0.88;
+    const availableSpace = footerTop - titleBottom;
+    const buttonHeight = 50;
+    const buttonSpacing = 20;
+    const totalButtonsHeight = buttonHeight * 3 + buttonSpacing * 2;
+    const startY = titleBottom + (availableSpace - totalButtonsHeight) / 2 + buttonHeight / 2;
+
     this.createButton({
       x: width / 2,
-      y: height * 0.45,
+      y: startY,
       width: 200,
-      height: 50,
+      height: buttonHeight,
       text: 'Play Now',
       onClick: () => this.scene.start('GameScene', { difficulty: this.currentDifficulty, soundSettings: this.currentSoundSettings }),
     });
 
     this.createButton({
       x: width / 2,
-      y: height * 0.55,
+      y: startY + buttonHeight + buttonSpacing,
       width: 200,
-      height: 50,
+      height: buttonHeight,
       text: 'Leaderboard',
       disabled: true,
     });
 
     this.createButton({
       x: width / 2,
-      y: height * 0.65,
+      y: startY + (buttonHeight + buttonSpacing) * 2,
       width: 200,
-      height: 50,
+      height: buttonHeight,
       text: 'Settings',
       onClick: () => this.settingsDialog.show(this.currentDifficulty, this.currentSoundSettings),
     });
 
     this.createFooterLink(width, height);
+    this.createCredits(width, height);
   }
 
   private createWordmark(screenWidth: number, screenHeight: number): void {
     const wordmark = this.add.image(screenWidth / 2, screenHeight * 0.2, 'wordmark');
     const maxWidth = screenWidth * 0.8;
+    const scaleFactor = 0.7;
     if (wordmark.width > maxWidth) {
-      wordmark.setScale(maxWidth / wordmark.width);
+      wordmark.setScale((maxWidth / wordmark.width) * scaleFactor);
+    } else {
+      wordmark.setScale(scaleFactor);
     }
   }
 
@@ -219,37 +231,141 @@ export class MainMenuScene extends Phaser.Scene {
        drawUnderline(0x888888);
      });
 
-     footerText.on('pointerdown', () => {
-       window.open('https://github.com/OzTamir/Chromask', '_blank');
-     });
-   }
+    footerText.on('pointerdown', () => {
+      window.open('https://github.com/OzTamir/Chromask', '_blank');
+    });
+  }
 
-   private loadDifficulty(): DifficultyLevel {
-     const saved = localStorage.getItem(STORAGE.SELECTED_DIFFICULTY);
-     if (saved !== null && Object.values(DifficultyLevel).includes(saved as DifficultyLevel)) {
-       return saved as DifficultyLevel;
-     }
-     return DifficultyLevel.MEDIUM;
-   }
+  private createCredits(screenWidth: number, screenHeight: number): void {
+    const creditsY = screenHeight * 0.96;
+    
+    const creditConfigs = [
+      { name: 'Oz Tamir', url: 'https://github.com/OzTamir' },
+      { name: 'Eden Rozen', url: 'https://github.com/FistOfFury' },
+      { name: 'Eva Osherovsky', url: 'https://github.com/evoosa' },
+      { name: 'Noam Gal', url: 'https://github.com/i-am-noamg' },
+    ];
 
-   private saveDifficulty(difficulty: DifficultyLevel): void {
-     localStorage.setItem(STORAGE.SELECTED_DIFFICULTY, difficulty);
-   }
+    const fontSize = 12;
+    const separator = ' | ';
+    
+    const byText = this.add.text(0, creditsY, 'By: ', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: `${fontSize}px`,
+      color: '#666666',
+      resolution: window.devicePixelRatio,
+    });
 
-   private loadSoundSettings(): SoundSettings {
-     const saved = localStorage.getItem(STORAGE.SOUND_SETTINGS);
-     if (saved !== null) {
-       try {
-         const parsed = JSON.parse(saved) as SoundSettings;
-         return { ...DEFAULT_SOUND_SETTINGS, ...parsed, custom: { ...DEFAULT_SOUND_SETTINGS.custom, ...parsed.custom } };
-       } catch {
-         return { ...DEFAULT_SOUND_SETTINGS };
-       }
-     }
-     return { ...DEFAULT_SOUND_SETTINGS };
-   }
+    let totalWidth = byText.width;
+    const nameWidths: number[] = [];
+    const sepWidths: number[] = [];
 
-   private saveSoundSettings(settings: SoundSettings): void {
-     localStorage.setItem(STORAGE.SOUND_SETTINGS, JSON.stringify(settings));
-   }
+    creditConfigs.forEach((config, index) => {
+      const tempName = this.add.text(0, 0, config.name, {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: `${fontSize}px`,
+        color: '#666666',
+        resolution: window.devicePixelRatio,
+      });
+      nameWidths.push(tempName.width);
+      totalWidth += tempName.width;
+      tempName.destroy();
+
+      if (index < creditConfigs.length - 1) {
+        const tempSep = this.add.text(0, 0, separator, {
+          fontFamily: 'Arial, sans-serif',
+          fontSize: `${fontSize}px`,
+          color: '#666666',
+          resolution: window.devicePixelRatio,
+        });
+        sepWidths.push(tempSep.width);
+        totalWidth += tempSep.width;
+        tempSep.destroy();
+      }
+    });
+
+    const startX = (screenWidth - totalWidth) / 2;
+    let currentX = startX;
+
+    byText.setPosition(currentX, creditsY);
+    currentX += byText.width;
+
+    creditConfigs.forEach((config, index) => {
+      const nameX = currentX;
+      
+      const nameText = this.add.text(nameX, creditsY, config.name, {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: `${fontSize}px`,
+        color: '#666666',
+        resolution: window.devicePixelRatio,
+      });
+
+      const underline = this.add.graphics();
+
+      const drawUnderline = (color: number) => {
+        underline.clear();
+        underline.lineStyle(1, color, 1);
+        underline.lineBetween(nameX, creditsY + nameText.height - 2, nameX + nameWidths[index], creditsY + nameText.height - 2);
+      };
+
+      drawUnderline(0x666666);
+
+      nameText.setInteractive({ useHandCursor: true });
+
+      nameText.on('pointerover', () => {
+        nameText.setColor('#444444');
+        drawUnderline(0x444444);
+      });
+
+      nameText.on('pointerout', () => {
+        nameText.setColor('#666666');
+        drawUnderline(0x666666);
+      });
+
+      nameText.on('pointerdown', () => {
+        window.open(config.url, '_blank');
+      });
+
+      currentX += nameWidths[index];
+
+      if (index < creditConfigs.length - 1) {
+        this.add.text(currentX, creditsY, separator, {
+          fontFamily: 'Arial, sans-serif',
+          fontSize: `${fontSize}px`,
+          color: '#666666',
+          resolution: window.devicePixelRatio,
+        });
+        currentX += sepWidths[index];
+      }
+    });
+  }
+
+  private loadDifficulty(): DifficultyLevel {
+    const saved = localStorage.getItem(STORAGE.SELECTED_DIFFICULTY);
+    if (saved !== null && Object.values(DifficultyLevel).includes(saved as DifficultyLevel)) {
+      return saved as DifficultyLevel;
+    }
+    return DifficultyLevel.MEDIUM;
+  }
+
+  private saveDifficulty(difficulty: DifficultyLevel): void {
+    localStorage.setItem(STORAGE.SELECTED_DIFFICULTY, difficulty);
+  }
+
+  private loadSoundSettings(): SoundSettings {
+    const saved = localStorage.getItem(STORAGE.SOUND_SETTINGS);
+    if (saved !== null) {
+      try {
+        const parsed = JSON.parse(saved) as SoundSettings;
+        return { ...DEFAULT_SOUND_SETTINGS, ...parsed, custom: { ...DEFAULT_SOUND_SETTINGS.custom, ...parsed.custom } };
+      } catch {
+        return { ...DEFAULT_SOUND_SETTINGS };
+      }
+    }
+    return { ...DEFAULT_SOUND_SETTINGS };
+  }
+
+  private saveSoundSettings(settings: SoundSettings): void {
+    localStorage.setItem(STORAGE.SOUND_SETTINGS, JSON.stringify(settings));
+  }
 }
