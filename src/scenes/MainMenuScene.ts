@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { SettingsDialog } from '../ui/SettingsDialog';
 import { 
   DifficultyLevel, STORAGE, 
-  SoundSettings, DEFAULT_SOUND_SETTINGS 
+  SoundSettings, DEFAULT_SOUND_SETTINGS, SoundMode, SoundCategory, AUDIO 
 } from '../constants';
 
 interface ButtonConfig {
@@ -27,6 +27,7 @@ export class MainMenuScene extends Phaser.Scene {
   private settingsDialog!: SettingsDialog;
   private currentDifficulty: DifficultyLevel = DifficultyLevel.MEDIUM;
   private currentSoundSettings: SoundSettings = { ...DEFAULT_SOUND_SETTINGS };
+  private menuMusic: Phaser.Sound.BaseSound | null = null;
 
   constructor() {
     super({ key: 'MainMenuScene' });
@@ -48,6 +49,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.currentSoundSettings = soundSettings;
         this.saveDifficulty(difficulty);
         this.saveSoundSettings(soundSettings);
+        this.updateMenuMusic();
       }
     );
 
@@ -66,7 +68,10 @@ export class MainMenuScene extends Phaser.Scene {
       width: 200,
       height: buttonHeight,
       text: 'Play Now',
-      onClick: () => this.scene.start('GameScene', { difficulty: this.currentDifficulty, soundSettings: this.currentSoundSettings }),
+      onClick: () => {
+        this.stopMenuMusic();
+        this.scene.start('GameScene', { difficulty: this.currentDifficulty, soundSettings: this.currentSoundSettings });
+      },
     });
 
     this.createButton({
@@ -89,6 +94,59 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.createFooterLink(width, height);
     this.createCredits(width, height);
+    
+    this.setupAudioUnlock();
+  }
+
+  private setupAudioUnlock(): void {
+    if (this.sound.locked) {
+      this.sound.once('unlocked', () => {
+        this.startMenuMusic();
+      });
+    } else {
+      this.startMenuMusic();
+    }
+  }
+
+  private isMusicEnabled(): boolean {
+    if (this.currentSoundSettings.mode === SoundMode.OFF) {
+      return false;
+    }
+    if (this.currentSoundSettings.mode === SoundMode.ON) {
+      return true;
+    }
+    return this.currentSoundSettings.custom[SoundCategory.MUSIC];
+  }
+
+  private startMenuMusic(): void {
+    if (!this.isMusicEnabled()) return;
+    
+    if (this.menuMusic) {
+      this.menuMusic.stop();
+    }
+    
+    this.menuMusic = this.sound.add(AUDIO.KEYS.MAIN_MENU_MUSIC, { 
+      loop: true, 
+      volume: AUDIO.CONFIG.MUSIC_VOLUME 
+    });
+    this.menuMusic.play();
+  }
+
+  private stopMenuMusic(): void {
+    if (this.menuMusic) {
+      this.menuMusic.stop();
+      this.menuMusic = null;
+    }
+  }
+
+  private updateMenuMusic(): void {
+    if (this.isMusicEnabled()) {
+      if (!this.menuMusic || !this.menuMusic.isPlaying) {
+        this.startMenuMusic();
+      }
+    } else {
+      this.stopMenuMusic();
+    }
   }
 
   private createWordmark(screenWidth: number, screenHeight: number): void {

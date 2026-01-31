@@ -189,22 +189,44 @@ const AUDIO = {
     GAME_START: 'sfx-game-start',
     GAME_OVER: 'sfx-game-over',
     BRUH: ['sfx-bruh1', 'sfx-bruh2', 'sfx-bruh3'],
-    WARNING: 'sfx-warning',
+    MAIN_MENU_MUSIC: 'sfx-main-menu-music',
+    BACKGROUND_MUSIC: 'sfx-background-music',
   },
   FILES: {
     // Maps sound keys to file paths (relative to public/)
     'sfx-jump': 'assets/sounds/SFX JUMP.wav',
     'sfx-platform-hit-RED': 'assets/sounds/SFX PF HIT - RED.wav',
+    'sfx-main-menu-music': 'assets/sounds/SFX MAIN MENU MUSIC.wav',
+    'sfx-background-music': 'assets/sounds/BACKGROUND MUSIC.wav',
     // ... etc for all sound files
   },
   CONFIG: {
-    WARNING_COOLDOWN_MS: 3000,     // Minimum time between warnings
-    WARNING_IDLE_TIME_MS: 2000,    // Idle time before warning triggers
-    WARNING_ZONE_PERCENT: 0.2,     // Bottom 20% of screen
-    NEAR_MISS_THRESHOLD: 50,       // Pixels from death line
     BRUH_COOLDOWN_MS: 2000,        // Minimum time between BRUH sounds
+    MUSIC_VOLUME: 0.3,             // Background music volume (0-1)
   },
 };
+```
+
+### Sound Settings
+
+```typescript
+enum SoundMode {
+  ON = 'on',       // All sounds enabled
+  OFF = 'off',     // All sounds disabled
+  CUSTOM = 'custom' // Individual category toggles
+}
+
+enum SoundCategory {
+  JUMP = 'jump',       // Jump and voice sounds
+  LANDING = 'landing', // Platform landing sounds
+  UI = 'ui',           // Game start, game over
+  MUSIC = 'music',     // Background music
+}
+
+interface SoundSettings {
+  mode: SoundMode;
+  custom: Record<SoundCategory, boolean>;
+}
 ```
 
 ### COMBO Constants
@@ -678,12 +700,12 @@ const platformCount = difficultyManager.getPlatformHeight(heightClimbed);
 
 ### AudioManager
 
-Centralized audio system managing all game sounds and background music.
+Centralized audio system managing all game sounds and background music. Respects `SoundSettings` for category-based audio control.
 
 #### Constructor
 
 ```typescript
-new AudioManager(scene: Phaser.Scene)
+new AudioManager(scene: Phaser.Scene, soundSettings: SoundSettings)
 ```
 
 #### Methods
@@ -728,6 +750,27 @@ Play warning sound when player is idle near screen bottom. Has 3-second cooldown
 **`stopAll(): void`**
 
 Stop all sounds and background music. Called on game over.
+
+**`playBackgroundMusic(): void`**
+
+Start looped background music at configured volume. Respects MUSIC category setting.
+
+```typescript
+audioManager.playBackgroundMusic();  // Called in GameScene.create()
+```
+
+**`stopBackgroundMusic(): void`**
+
+Stop background music if playing.
+
+**`updateBackgroundMusic(): void`**
+
+Start or stop background music based on current sound settings. Call after settings change.
+
+```typescript
+audioManager.updateSoundSettings(newSettings);
+audioManager.updateBackgroundMusic();
+```
 
 ---
 

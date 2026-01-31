@@ -6,6 +6,7 @@ export class AudioManager {
   private lastBruhTime: number = 0;
   private soundSettings: SoundSettings;
   private landingCount: number = 0;
+  private backgroundMusic: Phaser.Sound.BaseSound | null = null;
 
   constructor(scene: Phaser.Scene, soundSettings: SoundSettings) {
     this.scene = scene;
@@ -77,9 +78,41 @@ export class AudioManager {
 
    stopAll(): void {
      this.scene.sound.stopAll();
+     this.backgroundMusic = null;
    }
 
    updateSoundSettings(newSettings: SoundSettings): void {
      this.soundSettings = newSettings;
    }
+
+  playBackgroundMusic(): void {
+    if (!this.isCategoryEnabled(SoundCategory.MUSIC)) return;
+    
+    if (this.backgroundMusic) {
+      this.backgroundMusic.stop();
+    }
+    
+    this.backgroundMusic = this.scene.sound.add(AUDIO.KEYS.BACKGROUND_MUSIC, { 
+      loop: true, 
+      volume: AUDIO.CONFIG.MUSIC_VOLUME 
+    });
+    this.backgroundMusic.play();
+  }
+
+  stopBackgroundMusic(): void {
+    if (this.backgroundMusic) {
+      this.backgroundMusic.stop();
+      this.backgroundMusic = null;
+    }
+  }
+
+  updateBackgroundMusic(): void {
+    if (this.isCategoryEnabled(SoundCategory.MUSIC)) {
+      if (!this.backgroundMusic || !this.backgroundMusic.isPlaying) {
+        this.playBackgroundMusic();
+      }
+    } else {
+      this.stopBackgroundMusic();
+    }
+  }
 }

@@ -125,13 +125,17 @@ The `DifficultyManager` tracks progress and adjusts gameplay:
 
 ### Audio System
 
-The `AudioManager` centralizes all sound effect playback:
+The `AudioManager` centralizes all sound effect and music playback:
 
+- **Background music**: Looped music during gameplay (configurable volume via `AUDIO.CONFIG.MUSIC_VOLUME`)
 - **Jump sounds**: Random selection from 4 variations on successful jumps
 - **Platform landing**: Color-specific sounds when landing on matching platforms
 - **Near-miss detection**: "BRUH" sounds when player lands within 50px of death threshold
-- **Warning system**: Plays when player is idle in bottom 20% of screen for 2+ seconds
 - **Game events**: Start and game over sounds
+
+The `MainMenuScene` manages its own menu music, with browser autoplay unlock handling.
+
+Audio respects `SoundSettings` with three modes: ON (all sounds), OFF (silent), CUSTOM (per-category toggles for Jump, Landing, UI, and Music).
 
 Audio assets are loaded in `PreloadScene` using keys defined in `AUDIO.FILES` constants.
 

@@ -114,6 +114,7 @@ export enum SoundCategory {
   JUMP = 'jump',
   LANDING = 'landing',
   UI = 'ui',
+  MUSIC = 'music',
 }
 
 /**
@@ -133,6 +134,7 @@ export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
     [SoundCategory.JUMP]: true,
     [SoundCategory.LANDING]: true,
     [SoundCategory.UI]: true,
+    [SoundCategory.MUSIC]: true,
   },
 };
 
@@ -143,6 +145,7 @@ export const SOUND_CATEGORY_LABELS: Record<SoundCategory, string> = {
   [SoundCategory.JUMP]: 'Jump',
   [SoundCategory.LANDING]: 'Landing',
   [SoundCategory.UI]: 'UI Sounds',
+  [SoundCategory.MUSIC]: 'Music',
 };
 
 /**
@@ -152,6 +155,7 @@ export const SOUND_CATEGORY_DESCRIPTIONS: Record<SoundCategory, string> = {
   [SoundCategory.JUMP]: 'Jump and voice sounds',
   [SoundCategory.LANDING]: 'Platform landing sounds',
   [SoundCategory.UI]: 'Game start, game over',
+  [SoundCategory.MUSIC]: 'Background music',
 };
 
 // =============================================================================
@@ -393,6 +397,8 @@ export const AUDIO = {
     GAME_OVER_ALT: 'sfx-game-over-alt',
     BRUH: ['sfx-bruh1', 'sfx-bruh2', 'sfx-bruh3'],
     SUFFER: ['sfx-suffer1', 'sfx-suffer2', 'sfx-suffer3', 'sfx-suffer4', 'sfx-suffer5', 'sfx-suffer6'],
+    MAIN_MENU_MUSIC: 'sfx-main-menu-music',
+    BACKGROUND_MUSIC: 'sfx-background-music',
   },
   // File paths (relative to public/)
   FILES: {
@@ -419,11 +425,14 @@ export const AUDIO = {
     'sfx-suffer4': 'assets/sounds/SUFFER4.wav',
     'sfx-suffer5': 'assets/sounds/SUFFER5.wav',
     'sfx-suffer6': 'assets/sounds/SUFFER6.wav',
+    'sfx-main-menu-music': 'assets/sounds/SFX MAIN MENU MUSIC.wav',
+    'sfx-background-music': 'assets/sounds/BACKGROUND MUSIC.wav',
   },
   // Configuration
   CONFIG: {
     BRUH_COOLDOWN_MS: 2000,
     SUFFER_LANDING_INTERVAL: 10,
+    MUSIC_VOLUME: 0.3,
   },
 } as const;
 

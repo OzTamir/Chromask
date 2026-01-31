@@ -179,7 +179,7 @@ export class SettingsDialog extends Phaser.GameObjects.Container {
 
     const togglesStartY = currentY + 10;
     this.createCustomTogglesContainer(scene, togglesStartY);
-    currentY = togglesStartY + 144;
+    currentY = togglesStartY + 180;
 
     const closeButtonY = this.panelHeight / 2 - padding - 20;
     this.createCloseButton(scene, closeButtonY);
@@ -447,6 +447,7 @@ export class SettingsDialog extends Phaser.GameObjects.Container {
       SoundCategory.JUMP,
       SoundCategory.LANDING,
       SoundCategory.UI,
+      SoundCategory.MUSIC,
     ];
 
     const rowHeight = 36;
@@ -554,7 +555,7 @@ export class SettingsDialog extends Phaser.GameObjects.Container {
     const sectionHeight = 80;
     const descriptionHeight = 45;
     const sectionGap = 25;
-    const togglesHeight = this.soundSettings.mode === SoundMode.CUSTOM ? 160 : 0;
+    const togglesHeight = this.soundSettings.mode === SoundMode.CUSTOM ? 196 : 0;
     const closeButtonHeight = 60;
 
     if (this.audioOnly) {

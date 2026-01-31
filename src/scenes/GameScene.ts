@@ -83,6 +83,7 @@ export class GameScene extends Phaser.Scene {
     this.setupCamera();
     this.setupCollision();
     this.audioManager.playGameStart();
+    this.audioManager.playBackgroundMusic();
   }
 
   private setupPhysicsWorld(): void {
@@ -191,6 +192,7 @@ export class GameScene extends Phaser.Scene {
        (_difficulty, newSoundSettings) => {
          this.soundSettings = newSoundSettings;
          this.audioManager.updateSoundSettings(newSoundSettings);
+         this.audioManager.updateBackgroundMusic();
          localStorage.setItem(STORAGE.SOUND_SETTINGS, JSON.stringify(newSoundSettings));
          if (this.isPaused) {
            this.pauseMenu.show();
@@ -322,6 +324,7 @@ export class GameScene extends Phaser.Scene {
      this.settingsDialog.hide();
      this.soundSettings = this.settingsDialog.getSoundSettings();
      this.audioManager.updateSoundSettings(this.soundSettings);
+     this.audioManager.updateBackgroundMusic();
      localStorage.setItem(STORAGE.SOUND_SETTINGS, JSON.stringify(this.soundSettings));
      if (this.isPaused) {
        this.pauseMenu.show();
