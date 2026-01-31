@@ -12,8 +12,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private shadow: Shadow;
   private colorSwapPipeline: ColorSwapPipeline | null = null;
   private pulseTween: Phaser.Tweens.Tween | null = null;
-  private baseScale: number = 1;
-  private currentPulseScale: number = 0;
+  private pulseAura: Phaser.GameObjects.Ellipse | null = null;
+  private currentPulseIntensity: number = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'player-sprite');
@@ -31,6 +31,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.shadow = new Shadow(scene, -5);
     
+    this.setDepth(10);
+    this.pulseAura = scene.add.ellipse(x, y, 50, 60, 0xffaa00, 0.5);
+    this.pulseAura.setDepth(11);
+    
     scene.events.once('shutdown', this.cleanupPulse, this);
   }
 
@@ -46,6 +50,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.updateAnimation();
     this.updateEyes();
     this.updateShadow();
+    this.updateAura();
+  }
+
+  private updateAura(): void {
+    if (this.pulseAura) {
+      this.pulseAura.setPosition(this.x, this.y);
+    }
   }
 
   private createEyes(): void {
@@ -57,10 +68,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.leftPupil = this.scene.add.ellipse(this.x - eyeSpacingX, this.y + eyeOffsetY, 3, 3, 0x333333);
     this.rightPupil = this.scene.add.ellipse(this.x + eyeSpacingX, this.y + eyeOffsetY, 3, 3, 0x333333);
 
-    this.leftEye.setDepth(10);
-    this.rightEye.setDepth(10);
-    this.leftPupil.setDepth(11);
-    this.rightPupil.setDepth(11);
+    this.leftEye.setDepth(12);
+    this.rightEye.setDepth(12);
+    this.leftPupil.setDepth(13);
+    this.rightPupil.setDepth(13);
   }
 
   private destroyEyes(): void {
@@ -214,20 +225,27 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return false;
   }
 
-  startPulse(maxScale: number, frequency: number): void {
-    if (this.pulseTween && this.currentPulseScale === maxScale) {
+  startPulse(intensity: number, frequency: number): void {
+    if (this.pulseTween && this.currentPulseIntensity === intensity) {
       return;
     }
     
     this.stopPulse();
-    this.baseScale = this.currentCharacter.scale;
-    this.currentPulseScale = maxScale;
+    this.currentPulseIntensity = intensity;
+    
+    if (!this.pulseAura) return;
+    
+    const normalizedIntensity = (intensity - 1) * 10;
+    const maxAlpha = 0.4 + normalizedIntensity * 0.3;
+    
+    this.pulseAura.setAlpha(maxAlpha);
+    this.pulseAura.setScale(1);
     
     this.pulseTween = this.scene.tweens.add({
-      targets: this,
-      scaleX: { from: this.baseScale, to: maxScale },
-      scaleY: { from: this.baseScale, to: maxScale },
-      duration: 500 / frequency,
+      targets: this.pulseAura,
+      scale: { from: 1, to: 1.5 },
+      alpha: { from: maxAlpha, to: 0.1 },
+      duration: 1000 / frequency,
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut',
@@ -238,9 +256,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.pulseTween) {
       this.pulseTween.stop();
       this.pulseTween = null;
-      this.setScale(this.baseScale);
     }
-    this.currentPulseScale = 0;
+    if (this.pulseAura) {
+      this.pulseAura.setAlpha(0);
+      this.pulseAura.setScale(1);
+    }
+    this.currentPulseIntensity = 0;
   }
 
   isBelowScreen(cameraScrollY: number, cameraHeight: number): boolean {
@@ -262,6 +283,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   destroy(fromScene?: boolean): void {
     this.cleanupPulse();
     this.destroyEyes();
+    this.pulseAura?.destroy();
+    this.pulseAura = null;
     this.shadow.destroy();
     super.destroy(fromScene);
   }
