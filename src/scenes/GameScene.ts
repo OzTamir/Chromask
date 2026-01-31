@@ -61,10 +61,9 @@ export class GameScene extends Phaser.Scene {
        // Reset all scene state for new game (scene object is reused by Phaser)
        this.maxScrollSpeed = 0;
 
-        // Read difficulty and sound settings from scene data (passed from MainMenuScene)
         const sceneData = this.scene.settings.data as { difficulty?: DifficultyLevel; soundSettings?: SoundSettings } | undefined;
-        this.difficulty = sceneData?.difficulty ?? DifficultyLevel.MEDIUM;
-        this.soundSettings = sceneData?.soundSettings ?? DEFAULT_SOUND_SETTINGS;
+        this.difficulty = sceneData?.difficulty ?? this.loadDifficulty();
+        this.soundSettings = sceneData?.soundSettings ?? this.loadSoundSettings();
 
       // Randomize shadow angle for this game (light from above, random horizontal direction)
      const angleRange = VISUAL.SHADOW_ANGLE_MAX - VISUAL.SHADOW_ANGLE_MIN;
@@ -146,6 +145,27 @@ export class GameScene extends Phaser.Scene {
 
   private saveSelectedCharacterIndex(): void {
     localStorage.setItem(STORAGE.SELECTED_CHARACTER_INDEX, this.currentCharacterIndex.toString());
+  }
+
+  private loadDifficulty(): DifficultyLevel {
+    const saved = localStorage.getItem(STORAGE.SELECTED_DIFFICULTY);
+    if (saved !== null && Object.values(DifficultyLevel).includes(saved as DifficultyLevel)) {
+      return saved as DifficultyLevel;
+    }
+    return DifficultyLevel.MEDIUM;
+  }
+
+  private loadSoundSettings(): SoundSettings {
+    const saved = localStorage.getItem(STORAGE.SOUND_SETTINGS);
+    if (saved !== null) {
+      try {
+        const parsed = JSON.parse(saved) as SoundSettings;
+        return { ...DEFAULT_SOUND_SETTINGS, ...parsed, custom: { ...DEFAULT_SOUND_SETTINGS.custom, ...parsed.custom } };
+      } catch {
+        return { ...DEFAULT_SOUND_SETTINGS };
+      }
+    }
+    return { ...DEFAULT_SOUND_SETTINGS };
   }
 
   private setupCamera(): void {
