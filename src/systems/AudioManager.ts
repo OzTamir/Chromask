@@ -3,9 +3,9 @@ import { GameColor, AUDIO, COLOR_NAMES, SoundSettings, SoundMode, SoundCategory 
 
 export class AudioManager {
   private scene: Phaser.Scene;
-  private backgroundMusic: Phaser.Sound.BaseSound | null = null;
   private lastBruhTime: number = 0;
   private soundSettings: SoundSettings;
+  private landingCount: number = 0;
 
   constructor(scene: Phaser.Scene, soundSettings: SoundSettings) {
     this.scene = scene;
@@ -31,13 +31,25 @@ export class AudioManager {
     this.scene.sound.play(randomKey);
   }
 
-  // Play color-specific platform hit sound
   playPlatformHit(color: GameColor): void {
     if (!this.isCategoryEnabled(SoundCategory.LANDING)) return;
     if (color === GameColor.NONE) return;
-    const colorName = COLOR_NAMES[color];
-    const key = `${AUDIO.KEYS.PLATFORM_HIT}-${colorName}`;
-    this.scene.sound.play(key);
+    
+    this.landingCount++;
+    
+    if (this.landingCount % AUDIO.CONFIG.SUFFER_LANDING_INTERVAL === 0) {
+      this.playSuffer();
+    } else {
+      const colorName = COLOR_NAMES[color];
+      const key = `${AUDIO.KEYS.PLATFORM_HIT}-${colorName}`;
+      this.scene.sound.play(key);
+    }
+  }
+
+  private playSuffer(): void {
+    const keys = AUDIO.KEYS.SUFFER;
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    this.scene.sound.play(randomKey);
   }
 
   playGameStart(): void {
@@ -48,11 +60,6 @@ export class AudioManager {
   playGameOver(): void {
     if (!this.isCategoryEnabled(SoundCategory.UI)) return;
     this.scene.sound.play(AUDIO.KEYS.GAME_OVER);
-  }
-
-  playColorToggle(): void {
-    if (!this.isCategoryEnabled(SoundCategory.UI)) return;
-    this.scene.sound.play(AUDIO.KEYS.COLOR_TOGGLE);
   }
 
   // Play random BRUH sound with cooldown
@@ -67,40 +74,11 @@ export class AudioManager {
     this.scene.sound.play(randomKey);
   }
 
-  startBackgroundMusic(): void {
-    if (!this.isCategoryEnabled(SoundCategory.MUSIC)) return;
-    if (this.backgroundMusic) return;
-    
-    this.backgroundMusic = this.scene.sound.add(AUDIO.KEYS.MUSIC, {
-      loop: true,
-      rate: AUDIO.CONFIG.MUSIC_MIN_RATE,
-    });
-    this.backgroundMusic.play();
-  }
-
-  // Update music playback rate based on scroll speed (0-100 → 1.0-1.5)
-  updateMusicRate(scrollSpeed: number): void {
-    if (!this.backgroundMusic) return;
-    
-    const normalizedSpeed = Math.min(scrollSpeed / 100, 1);
-    const rate = AUDIO.CONFIG.MUSIC_MIN_RATE + 
-      (AUDIO.CONFIG.MUSIC_MAX_RATE - AUDIO.CONFIG.MUSIC_MIN_RATE) * normalizedSpeed;
-    
-    // Phaser BaseSound has setRate method
-    (this.backgroundMusic as Phaser.Sound.WebAudioSound | Phaser.Sound.HTML5AudioSound).setRate(rate);
-  }
-
    stopAll(): void {
      this.scene.sound.stopAll();
-     this.backgroundMusic = null;
    }
 
    updateSoundSettings(newSettings: SoundSettings): void {
      this.soundSettings = newSettings;
-     
-     if (this.backgroundMusic && !this.isCategoryEnabled(SoundCategory.MUSIC)) {
-       this.backgroundMusic.stop();
-       this.backgroundMusic = null;
-     }
    }
 }

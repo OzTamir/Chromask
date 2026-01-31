@@ -446,7 +446,6 @@ export class SettingsDialog extends Phaser.GameObjects.Container {
     const categories = [
       SoundCategory.JUMP,
       SoundCategory.LANDING,
-      SoundCategory.MUSIC,
       SoundCategory.UI,
     ];
 

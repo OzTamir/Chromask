@@ -113,7 +113,6 @@ export enum SoundMode {
 export enum SoundCategory {
   JUMP = 'jump',
   LANDING = 'landing',
-  MUSIC = 'music',
   UI = 'ui',
 }
 
@@ -133,7 +132,6 @@ export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
   custom: {
     [SoundCategory.JUMP]: true,
     [SoundCategory.LANDING]: true,
-    [SoundCategory.MUSIC]: true,
     [SoundCategory.UI]: true,
   },
 };
@@ -144,7 +142,6 @@ export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
 export const SOUND_CATEGORY_LABELS: Record<SoundCategory, string> = {
   [SoundCategory.JUMP]: 'Jump',
   [SoundCategory.LANDING]: 'Landing',
-  [SoundCategory.MUSIC]: 'Music',
   [SoundCategory.UI]: 'UI Sounds',
 };
 
@@ -154,8 +151,7 @@ export const SOUND_CATEGORY_LABELS: Record<SoundCategory, string> = {
 export const SOUND_CATEGORY_DESCRIPTIONS: Record<SoundCategory, string> = {
   [SoundCategory.JUMP]: 'Jump and voice sounds',
   [SoundCategory.LANDING]: 'Platform landing sounds',
-  [SoundCategory.MUSIC]: 'Background music',
-  [SoundCategory.UI]: 'Game start, game over, color toggle',
+  [SoundCategory.UI]: 'Game start, game over',
 };
 
 // =============================================================================
@@ -394,9 +390,8 @@ export const AUDIO = {
     PLATFORM_HIT: 'sfx-platform-hit', // Will be suffixed with color name
     GAME_START: 'sfx-game-start',
     GAME_OVER: 'sfx-game-over',
-    COLOR_TOGGLE: 'sfx-color-toggle',
     BRUH: ['sfx-bruh1', 'sfx-bruh2', 'sfx-bruh3'],
-    MUSIC: 'sfx-music',
+    SUFFER: ['sfx-suffer1', 'sfx-suffer2', 'sfx-suffer3', 'sfx-suffer4', 'sfx-suffer5', 'sfx-suffer6'],
   },
   // File paths (relative to public/)
   FILES: {
@@ -413,16 +408,19 @@ export const AUDIO = {
     'sfx-platform-hit-WHITE': 'assets/sounds/SFX PF HIT - WHITE.wav',
     'sfx-game-start': 'assets/sounds/SFX GAME START.wav',
     'sfx-game-over': 'assets/sounds/SFX GAME OVER.wav',
-    'sfx-color-toggle': 'assets/sounds/SFX COLOR TOGGLE ON_OFF.wav',
     'sfx-bruh1': 'assets/sounds/SFX BRUH1.wav',
     'sfx-bruh2': 'assets/sounds/SFX BRUH2.wav',
     'sfx-bruh3': 'assets/sounds/SFX BRUH3.wav',
-    'sfx-music': 'assets/sounds/SFX SCROLL SPEED INCREASE.wav',
+    'sfx-suffer1': 'assets/sounds/SUFFER1.wav',
+    'sfx-suffer2': 'assets/sounds/SUFFER2.wav',
+    'sfx-suffer3': 'assets/sounds/SUFFER3.wav',
+    'sfx-suffer4': 'assets/sounds/SUFFER4.wav',
+    'sfx-suffer5': 'assets/sounds/SUFFER5.wav',
+    'sfx-suffer6': 'assets/sounds/SUFFER6.wav',
   },
   // Configuration
   CONFIG: {
-    MUSIC_MIN_RATE: 1.0,
-    MUSIC_MAX_RATE: 1.5,
     BRUH_COOLDOWN_MS: 2000,
+    SUFFER_LANDING_INTERVAL: 10,
   },
 } as const;
