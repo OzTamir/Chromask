@@ -51,6 +51,7 @@ export class MainMenuScene extends Phaser.Scene {
       }
     );
 
+    // Calculate button positions centered between title and footer
     const titleBottom = height * 0.3;
     const footerTop = height * 0.88;
     const availableSpace = footerTop - titleBottom;
@@ -249,12 +250,14 @@ export class MainMenuScene extends Phaser.Scene {
     const fontSize = 12;
     const separator = ' | ';
     
+
     const byText = this.add.text(0, creditsY, 'By: ', {
       fontFamily: 'Arial, sans-serif',
       fontSize: `${fontSize}px`,
       color: '#666666',
       resolution: window.devicePixelRatio,
     });
+
 
     let totalWidth = byText.width;
     const nameWidths: number[] = [];
@@ -283,6 +286,7 @@ export class MainMenuScene extends Phaser.Scene {
         tempSep.destroy();
       }
     });
+
 
     const startX = (screenWidth - totalWidth) / 2;
     let currentX = startX;
