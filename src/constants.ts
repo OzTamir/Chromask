@@ -221,6 +221,8 @@ export const PLAYER = {
   MOVE_SPEED: 300,
   /** Jump velocity (negative = up) */
   JUMP_VELOCITY: -500,
+  /** Velocity multiplier when jump key is released (0 = instant fall, 1 = no change) */
+  JUMP_CUT_MULTIPLIER: 0.25,
   /** Gravity applied to player (pixels/second^2) */
   GRAVITY: 800,
   /** Player hitbox dimensions - rectangular like Thomas was Alone characters */
@@ -308,6 +310,16 @@ export const CAMERA = {
   SPAWN_AHEAD: 800,
   /** How far behind to cull platforms */
   CULL_BEHIND: 100,
+} as const;
+
+// =============================================================================
+// BACKGROUND
+// =============================================================================
+
+export const BACKGROUND = {
+  START_KEY: 'background-start',
+  CONTINUOUS_KEY: 'background-continuous',
+  CONTINUOUS_TILE_HEIGHT: 720,
 } as const;
 
 // =============================================================================

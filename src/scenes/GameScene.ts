@@ -29,10 +29,11 @@ export class GameScene extends Phaser.Scene {
   private pauseMenu!: PauseMenu;
   private settingsDialog!: SettingsDialog;
   private soundSettings!: SoundSettings;
-  private isPaused: boolean = false;
-  private currentCharacterIndex: number = 0;
-  private hasJumped: boolean = false;
-  private difficulty: DifficultyLevel = DifficultyLevel.MEDIUM;
+   private isPaused: boolean = false;
+   private currentCharacterIndex: number = 0;
+   private hasJumped: boolean = false;
+   private isJumpingUp: boolean = false;
+   private difficulty: DifficultyLevel = DifficultyLevel.MEDIUM;
 
    private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
    private wasd!: { up: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key };
@@ -90,27 +91,39 @@ export class GameScene extends Phaser.Scene {
     this.physics.world.setBounds(0, -100000, this.gameWidth, 200000);
   }
 
-  private setupInput(): void {
-    this.cursors = this.input.keyboard!.createCursorKeys();
-    
-    this.wasd = {
-      up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-      left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-      right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-    };
+   private setupInput(): void {
+     this.cursors = this.input.keyboard!.createCursorKeys();
 
-    this.colorKeys = {
-      red: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
-      green: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
-      blue: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
-    };
+     this.wasd = {
+       up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+       left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+       right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+     };
 
-    this.helpKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH);
-    this.tabKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
-    this.escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+     this.colorKeys = {
+       red: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+       green: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+       blue: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+     };
 
-    this.input.keyboard!.addCapture('W,A,S,D,SPACE,UP,DOWN,LEFT,RIGHT,ONE,TWO,THREE,FORWARD_SLASH,TAB,ESC');
-  }
+     this.helpKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH);
+     this.tabKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
+     this.escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+     this.input.keyboard!.addCapture('W,A,S,D,SPACE,UP,DOWN,LEFT,RIGHT,ONE,TWO,THREE,FORWARD_SLASH,TAB,ESC');
+
+     this.input.keyboard!.on('keyup-UP', this.onJumpKeyUp, this);
+     this.input.keyboard!.on('keyup-W', this.onJumpKeyUp, this);
+     this.input.keyboard!.on('keyup-SPACE', this.onJumpKeyUp, this);
+   }
+
+   private onJumpKeyUp(): void {
+     const body = this.player.body as Phaser.Physics.Arcade.Body;
+     if (this.isJumpingUp && body.velocity.y < 0) {
+       body.velocity.y *= PLAYER.JUMP_CUT_MULTIPLIER;
+       this.isJumpingUp = false;
+     }
+   }
 
   private setupSystems(): void {
     this.colorSystem = new ColorSystem();
@@ -287,24 +300,32 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-   update(_time: number, delta: number): void {
-     this.handlePauseInput();
-     
-     if (this.isPaused) {
-       return;
-     }
-     
-     this.handleInput();
-     this.handleCharacterSwitch();
-     this.updateColorFromKeys();
-     this.updateHelpDialog();
-     this.updatePlatformSolidity();
-     this.updateCombo();
-     this.updateCamera(delta);
-     this.updateSpawning();
-     this.updateScore();
-     this.checkDeath();
-   }
+    update(_time: number, delta: number): void {
+      this.handlePauseInput();
+
+      if (this.isPaused) {
+        return;
+      }
+
+      this.handleInput();
+      this.handleJumpState();
+      this.handleCharacterSwitch();
+      this.updateColorFromKeys();
+      this.updateHelpDialog();
+      this.updatePlatformSolidity();
+      this.updateCombo();
+      this.updateCamera(delta);
+      this.updateSpawning();
+      this.updateScore();
+      this.checkDeath();
+    }
+
+    private handleJumpState(): void {
+      const body = this.player.body as Phaser.Physics.Arcade.Body;
+      if (this.isJumpingUp && body.velocity.y >= 0) {
+        this.isJumpingUp = false;
+      }
+    }
    
    private handlePauseInput(): void {
      if (Phaser.Input.Keyboard.JustDown(this.escKey)) {
@@ -355,34 +376,35 @@ export class GameScene extends Phaser.Scene {
       this.settingsDialog.show(this.difficulty, this.soundSettings, true);
     }
 
-   private handleInput(): void {
-     const left = this.cursors.left.isDown || this.wasd.left.isDown;
-     const right = this.cursors.right.isDown || this.wasd.right.isDown;
-     const jump = Phaser.Input.Keyboard.JustDown(this.cursors.up) || 
-                  Phaser.Input.Keyboard.JustDown(this.wasd.up) ||
-                  Phaser.Input.Keyboard.JustDown(this.cursors.space!);
+    private handleInput(): void {
+      const left = this.cursors.left.isDown || this.wasd.left.isDown;
+      const right = this.cursors.right.isDown || this.wasd.right.isDown;
+      const jump = Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
+                   Phaser.Input.Keyboard.JustDown(this.wasd.up) ||
+                   Phaser.Input.Keyboard.JustDown(this.cursors.space!);
 
-     if (left) {
-       this.player.moveLeft();
-     } else if (right) {
-       this.player.moveRight();
-     } else {
-       this.player.stopHorizontal();
-     }
-
-      if (jump) {
-        const jumpMultiplier = this.comboSystem.getJumpMultiplier();
-        const didJump = this.player.jump(jumpMultiplier);
-        if (didJump) {
-          this.comboSystem.onJumpStart();
-          this.audioManager.playJump();
-          if (!this.hasJumped) {
-            this.hasJumped = true;
-            this.characterSelector.hide();
-          }
-        }
+      if (left) {
+        this.player.moveLeft();
+      } else if (right) {
+        this.player.moveRight();
+      } else {
+        this.player.stopHorizontal();
       }
-   }
+
+       if (jump) {
+         const jumpMultiplier = this.comboSystem.getJumpMultiplier();
+         const didJump = this.player.jump(jumpMultiplier);
+         if (didJump) {
+           this.isJumpingUp = true;
+           this.comboSystem.onJumpStart();
+           this.audioManager.playJump();
+           if (!this.hasJumped) {
+             this.hasJumped = true;
+             this.characterSelector.hide();
+           }
+         }
+       }
+    }
 
    private isOnGround(): boolean {
      return this.player.y >= this.startingY - 10;
